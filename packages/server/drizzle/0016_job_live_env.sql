@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `live_env` text DEFAULT '{}' NOT NULL;

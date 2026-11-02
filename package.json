@@ -1,0 +1,25 @@
+{
+  "name": "ahtapot",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "docker:build": "docker build -f docker/agent/Dockerfile -t ahtapot/agent-base:latest .",
+    "dev": "npm run build && npm run dev -w @ahtapot/server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @ahtapot/server",
+    "db:migrate": "npm run db:migrate -w @ahtapot/server"
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.28.0"
+    }
+  }
+}

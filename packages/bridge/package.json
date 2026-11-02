@@ -1,0 +1,21 @@
+{
+  "name": "@ahtapot/bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --noEmit",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@ahtapot/shared": "*",
+    "@anthropic-ai/claude-agent-sdk": "^0.3.284",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.4",
+    "typescript": "^7.0.0"
+  }
+}

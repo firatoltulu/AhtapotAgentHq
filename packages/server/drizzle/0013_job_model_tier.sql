@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `model_tier` text;

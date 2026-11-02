@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noEmit": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*", "vite.config.ts"],
+  // Testler Node'da `--experimental-strip-types` ile kosar (.ts uzantili import
+  // gerekir); Vite onlari paketlemez, tsc de denetlemez.
+  "exclude": ["src/**/*.test.ts"],
+  "references": [{ "path": "../shared" }]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `step_checklist` text DEFAULT '{}' NOT NULL;

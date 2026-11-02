@@ -1,0 +1,147 @@
+# ghcr.io paket sürümlerini ve GitHub Release'leri budar.
+#
+# Northwind'deki `clean.yml`'den uyarlandı; oradaki iki karar aynen geçerli:
+#   - Üçüncü taraf action YOK, doğrudan `gh api`. `actions/delete-package-versions`
+#     hâlâ node20 ve node20 runner'lardan 2026-09-23'te kaldırıldı — zamanlanmış bir
+#     job'ın sessizce iş yapmadığını kimse fark etmez. Ayrıca bu workflow silme
+#     yetkisi taşıyor; değişebilen bir etiketle çağrılan koda o yetkiyi vermiyoruz.
+#   - Release silinir, TAG SİLİNMEZ: tag bir kimliktir (`git checkout v1.6.0`),
+#     maliyeti sıfıra yakın. Geri alma akışı da tag'e dayanıyor.
+#
+# ── NEDEN SATIR SAYARAK DEĞİL ETİKETLİ SÜRÜM SAYARAK ──────────────────────────────
+# Her yayın ghcr'de ÜÇ satır bırakıyor: etiketli index + iki etiketsiz kardeş
+# (amd64 manifest ve attestation) — ölçüldü, 2026-09-23. Docker build'lere
+# `provenance: false` eklendikten sonraki yayınlar TEK satır bırakıyor; geçiş
+# döneminde ikisi karışık durur ve bu yüzden de satır saymak yanlış olur.
+# Northwind "15 satır tut"
+# diyor; bu, satırlar hep üçerli ve sıralı geldiği sürece doğru. Burada iki şey
+# onu kırar:
+#   1) Geri alma. Sürüm akışı `latest`'i ESKİ bir sürümün index'ine yeniden
+#      bağlıyor. O sürüm satır sırasında "eski" kalır; satır sayan bir budama
+#      `latest`'in işaret ettiği image'ı ya da onun etiketsiz kardeşlerini siler ve
+#      sunucunun `docker compose pull`'u "manifest unknown" ile düşer.
+#   2) Üçlü oran değişirse (multi-arch'a geçiş, attestation'ı kapatma) sabit bir
+#      satır sayısı sessizce image'ı yarısından keser.
+# Bu yüzden: son KEEP_VERSIONS ETİKETLİ sürüm + `latest` taşıyan sürüm tutulur.
+# Etiketsiz bir satır yalnız, tutulan en eski etiketli sürümden
+# UNTAGGED_MARGIN_MIN dakika daha eskiyse silinir. Kardeşler index'ten 1-2 saniye
+# önce yazılıyor (ölçüldü); pay, tutulan bir image'ın parçasına dokunmamak için.
+# Payın içinde kalan artık bir satır zararsızdır, bir sonraki yayında temizlenir.
+#
+# ── YETKİ ─────────────────────────────────────────────────────────────────────────
+# `GITHUB_TOKEN`'ın paket sürümü silebilmesi için bu reponun pakette **Admin**
+# rolü olmalı (paket ayarları → Manage Actions access). Yayını yapan workflow'un
+# otomatik aldığı rol Write'tır ve silmeye yetmez: DELETE 403 döner, adım kırmızı
+# olur (set -e) — sessiz geçmez.
+
+name: clean
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Yalnız listele, silme"
+        type: boolean
+        default: true
+  schedule:
+    # 03:00 UTC: gece yarısı GitHub'ın en yoğun cron dilimi, işler kuyrukta bekliyor.
+    - cron: "0 3 * * *"
+
+# Zamanlanmış çalışmada varsayılan izinler salt okunur; silme açıkça istenmeli.
+permissions:
+  contents: write   # release silme
+  packages: write   # paket sürümü silme
+
+concurrency:
+  group: clean
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Budama
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: firatoltulu
+      REPO: ${{ github.repository }}
+      PACKAGES: "ahtapot-server ahtapot-agent-base"
+      KEEP_VERSIONS: "5"
+      KEEP_RELEASES: "5"
+      UNTAGGED_MARGIN_MIN: "10"
+      # Zamanlanmış çalışmada `inputs` boştur → gerçekten siler. Elle tetiklemede
+      # varsayılan kuru çalışma: yanlış bir KEEP değerini ilk kez görmek silerken olmasın.
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+
+    steps:
+      - name: Eski image sürümlerini sil
+        run: |
+          # `set -euo pipefail` ZORUNLU: döngüde patlayan bir API çağrısının exit kodu
+          # yutulursa adım yeşil görünür, temizlik yapılmadığı hâlde.
+          set -euo pipefail
+
+          for pkg in $PACKAGES; do
+            echo "── $pkg"
+
+            # `--paginate` şart (sayfa başına 30 sürüm). Filtre `--jq` İÇİNDE DEĞİL:
+            # `--paginate` ile jq her sayfaya ayrı uygulanır, sıralama/atlama sayfa
+            # başında sıfırlanırdı. Sayfalar `jq -s add` ile tek diziye birleşir.
+            ids="$(gh api --paginate \
+              "users/${OWNER}/packages/container/${pkg}/versions?per_page=100" \
+              | jq -s -r \
+                  --argjson keep "$KEEP_VERSIONS" \
+                  --argjson margin "$UNTAGGED_MARGIN_MIN" '
+                add
+                | map({id, t: (.created_at | fromdateiso8601), tags: .metadata.container.tags})
+                | (map(select(.tags | length > 0)) | sort_by(.t) | reverse) as $tagged
+                | ($tagged[:$keep] + [$tagged[] | select(.tags | index("latest"))]) as $kept
+                | if ($kept | length) == 0 then empty else
+                    ($kept | map(.t) | min) as $floor
+                    | ($kept | map(.id)) as $keepIds
+                    | ( [$tagged[$keep:][] | select(.id as $i | $keepIds | index($i) | not)]
+                      + [.[] | select((.tags | length) == 0 and .t < $floor - $margin * 60)] )
+                    | .[] | "\(.id)\t\(.tags | join(","))"
+                  end
+              ')"
+
+            if [ -z "$ids" ]; then
+              echo "Silinecek sürüm yok."
+              continue
+            fi
+
+            echo "$ids" | while IFS=$'\t' read -r id tags; do
+              [ -n "$id" ] || continue
+              echo "siliniyor: $pkg sürüm $id ${tags:-(etiketsiz)}"
+              [ "$DRY_RUN" = "true" ] && continue
+              gh api -X DELETE "users/${OWNER}/packages/container/${pkg}/versions/${id}"
+            done
+          done
+
+      - name: Eski release'leri sil
+        run: |
+          set -euo pipefail
+
+          # İndirme sayısına bakılmıyor: sayaç yalnız asset indirmelerini sayar ve
+          # release'ler asset taşımıyor — hep 0 döner, hiçbir şeyi korumaz.
+          # Sıralama tarih ile açıkça yapılıyor; API'nin sırasına güvenilmiyor.
+          # `published_at`, `created_at` DEĞİL: release'in `created_at`'i etiketlenen
+          # commit'in tarihidir (GitHub belgesi), yayın anı değil — eski bir commit'ten
+          # çıkılan yayın "eski" sayılıp silinirdi. Taslakların `published_at`'i null
+          # ve null en küçük sıralanır; elenmezse yarım kalmış taslak ilk silinen olurdu.
+          tags="$(gh api --paginate "repos/${REPO}/releases?per_page=100" \
+            | jq -s -r --argjson keep "$KEEP_RELEASES" '
+                add | map(select(.draft | not)) | sort_by(.published_at) | reverse
+                | .[$keep:][] | .tag_name
+              ')"
+
+          if [ -z "$tags" ]; then
+            echo "Silinecek release yok (toplam <= ${KEEP_RELEASES})."
+            exit 0
+          fi
+
+          echo "$tags" | while read -r tag; do
+            [ -n "$tag" ] || continue
+            echo "siliniyor: release $tag (tag korunuyor)"
+            [ "$DRY_RUN" = "true" ] && continue
+            gh release delete "$tag" --repo "${REPO}" --yes
+          done

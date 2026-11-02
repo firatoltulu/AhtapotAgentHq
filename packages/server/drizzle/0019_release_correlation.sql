@@ -1,0 +1,1 @@
+ALTER TABLE `project_releases` ADD `correlation_id` text;

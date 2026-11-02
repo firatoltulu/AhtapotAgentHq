@@ -1,0 +1,99 @@
+# AhtapotAgent'ın kendisini (server+web, port 7717) bu sunucuda koşturur.
+# Traefik BAŞKA BİR MAKİNEDE — buradan reverse proxy label'ı/docker-provider
+# bağlanması YOK. Bu servis 7717'yi doğrudan host'a map eder; uzaktaki Traefik
+# backend olarak bu sunucunun IP'sine + 7717'ye bağlanır (statik/file provider
+# konfigürasyonu Traefik'in kendi tarafında).
+#
+# Hedef proje sandbox imajları (docker/agent + Analyst'in ürettiği proje-özel
+# Dockerfile'lar) ayrı bir konu: bu servis onları `dockerode` (Node.js API,
+# docker.sock üzerinden) ile ayağa kaldırır. Konteynerde `docker` CLI'sı
+# (yalnız istemci + compose eklentisi) KURULU: canlı ortam `docker compose`u
+# spawn ediyor ve CLI yokken "spawn docker ENOENT" ile düşüyordu (yaşandı,
+# 2026-09-22). Compose burada koşar ama HOST daemon'ına konuşur; override
+# dosyası AHTAPOT_DATA altında ve o dizin aşağıda host ile AYNI yolda bağlı —
+# yol farklı olsaydı bind mount'lar host'ta bulunamazdı.
+# Taban imaj (`ahtapot/agent-base:latest`) için elle adım YOK: bu servis
+# açılışta tabanı kendi imajındaki dosyalardan (köprü, lock, tarif) build
+# eder — yalnız içerik değiştiyse. Sunucuyu güncellemek (`pull` + yeniden
+# başlatma) tabanı da günceller. Ayrı bir ghcr paketi ve `pull` + `tag`
+# eskiden vardı; atlandığında işler eski CLI ile koşup düştü (2026-09-23).
+# Build için host daemon'ının Docker Hub'a, npm'e ve github.com'a çıkabilmesi
+# gerekir. Bkz. packages/server/src/exec/agentBase.ts.
+#
+# PROJE İMAJLARI (`ahtapot/<slug>`) motor reposunda YAŞAMAZ — proje-özel bir
+# Dockerfile'ı burada tutmak motoru o projeye bağımlı kılardı (yaşandı,
+# 2026-09-20: `docker/northwind/Dockerfile` silindi). Analyst her proje için
+# tarifi sunucunun artifact dizinine üretir; profilden build edilir ve YEREL
+# `ahtapot/agent-base:latest` adını bekler. Taban değişince proje imajı ilk
+# işten önce kendiliğinden yeniden build edilir.
+#
+# İmaj: CI (.github/workflows/docker-server.yml) main'e her push'ta
+# ghcr.io'ya `latest` + commit SHA etiketiyle yayınlar. Sunucuda güncelleme
+# `docker compose pull && docker compose up -d` — CI otomatik deploy YAPMAZ.
+# `build:` bloğu yalnız yerelde/elle build etmek istersen (`--build` bayrağı
+# veya imaj hiç çekilmemişse) devreye girer, normal akışta kullanılmaz.
+
+services:
+  ahtapot-server:
+    image: ghcr.io/firatoltulu/ahtapot-server:latest
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    container_name: ahtapot-server
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      AHTAPOT_HOST: 0.0.0.0
+      AHTAPOT_PORT: 7717
+      # host.docker.internal bu servisin İÇİNDEN host'a dönmek için —
+      # extra_hosts ile Linux'ta da çalışır hale getiriliyor (CLAUDE.md:
+      # "host-gateway ile çözülür, sunucunun o arayüzü dinlemesi gerekir").
+      AHTAPOT_BRIDGE_HOST: ${AHTAPOT_BRIDGE_HOST:-host.docker.internal}
+      # Canlı ortamın uygulaması bu ağa da takılır; sağlık yoklaması
+      # `http://ahtapot-<jobId>:<konteyner portu>` iç adresinden yapılır.
+      # Canlı portlar host'un 127.0.0.1'ine yayınlanıyor ve bu konteynerin
+      # içinden ERİŞİLEMİYOR — healthcheck zaman aşımına kadar bekliyordu
+      # (yaşandı, 2026-09-22). Aşağıdaki `networks.default.name` ile AYNI olmalı.
+      AHTAPOT_LIVE_NETWORK: ${AHTAPOT_LIVE_NETWORK:-ahtapot}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      # Uzaktaki Traefik bu porta backend olarak bağlanacak. Sunucu
+      # firewall'ında bu portu yalnız Traefik'in IP'sine aç (bkz. deploy
+      # talimatı) — genele açık bırakma.
+      - "7717:7717"
+    volumes:
+      # Docker-in-Docker YOK: host'un kendi docker.sock'u paylaşılıyor, agent
+      # runner (dockerode) sandbox konteynerlerini host'ta, bu servisin
+      # yanında (sibling) başlatır. Bu yüzden AHTAPOT_DATA / worktree yolları
+      # da HOST üzerindeki gerçek mutlak yol olmalı — konteyner içinden görünen
+      # yol değil (dockerode host'ta konteyner açarken aynı yolu mount eder).
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${AHTAPOT_DATA_HOST}:${AHTAPOT_DATA_HOST}
+      - ${AHTAPOT_DB_HOST_DIR}:${AHTAPOT_DB_HOST_DIR}
+      - ${AHTAPOT_KEYS_HOST}:${AHTAPOT_KEYS_HOST}:ro
+      # Yerel ön inceleme (OCR) anahtarları — isteğe bağlı; tanımsızsa
+      # kullanılmayan bir yol bağlanır ve profil incelemeyi atlar. Ayrı bir
+      # `_HOST` değişkeni YOK: dosya aynı yola bağlandığı için sunucunun
+      # okuduğu `AHTAPOT_REVIEW_KEYS` ile compose'un bağladığı yol hep aynı.
+      - ${AHTAPOT_REVIEW_KEYS:-/tmp/ahtapot-review-keys-unused}:${AHTAPOT_REVIEW_KEYS:-/tmp/ahtapot-review-keys-unused}:ro
+      # AHTAPOT_WORKSPACES_ROOT'un HOST karşılığı — bu YOKSA sunucu env
+      # değişkenini görür (env_file) ama konteynerin kendi izole dosya
+      # sisteminde alakasız/erişilemez bir yola `mkdir` dener ("Permission
+      # denied") ve klonlar hiç host diskine dokunmaz (yaşandı).
+      - ${AHTAPOT_WORKSPACES_ROOT_HOST}:${AHTAPOT_WORKSPACES_ROOT_HOST}
+      # Traefik file-provider dizini — AYNI YOLDA bağlanır, çünkü sunucu
+      # `AHTAPOT_TRAEFIK_DYNAMIC_DIR`i olduğu gibi kullanıyor. Bu satır yokken
+      # değişken env_file ile geçiyor ama dizin konteynere hiç gelmiyordu;
+      # sunucu yolu kendi dosya sisteminde açmaya çalışıp `EACCES: mkdir`
+      # ile düşüyordu (yaşandı 2026-09-23). Değişken boşsa kullanılmayan bir
+      # yer tutucu bağlanır: compose koşullu volume bilmiyor, boş `:` ise
+      # "invalid spec" ile düşer.
+      - ${AHTAPOT_TRAEFIK_DYNAMIC_DIR:-/tmp/ahtapot-traefik-unused}:${AHTAPOT_TRAEFIK_DYNAMIC_DIR:-/tmp/ahtapot-traefik-unused}
+
+networks:
+  # Sabit ad: compose aksi hâlde dizin adından `<dizin>_default` türetir ve
+  # canlı ortamın `external` olarak bağlanacağı ad makineye göre değişirdi.
+  default:
+    name: ${AHTAPOT_LIVE_NETWORK:-ahtapot}

@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `review_handled_threads` text DEFAULT '[]' NOT NULL;

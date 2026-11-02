@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/*
+ * Operatör panelinin tasarım dizgesi — açık tema.
+ *
+ * Renkler tek tek buradan gelir; bileşenlerde ham hex yazılmaz. Tailwind 4
+ * `@theme` bloğu bunları hem CSS değişkeni hem utility sınıfı yapar
+ * (`--color-ink` → `text-ink`, `bg-ink`, `border-ink`).
+ *
+ * Ölçülen gerçek: durum renkleri iki biçimde gerekiyor — dolu nokta (parlak)
+ * ve açık zeminde okunabilir metin (koyu "ink"). Parlak rengi metinde
+ * kullanmak 4.5:1 kontrastı tutmuyor, o yüzden her durumun iki tonu var.
+ */
+@theme {
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* Yüzeyler — açıktan koyuya */
+  --color-canvas: #f2f5f3;
+  --color-surface: #ffffff;
+  --color-raised: #f7faf8;
+  --color-sunken: #edf2ef;
+  --color-log: #f1f4f1;
+  --color-chip: #eef1f0;
+  --color-skeleton: #eceeec;
+
+  /* Kenarlar */
+  --color-edge: #e3e8e5;
+  --color-edge-strong: #d9e0dc;
+  --color-edge-control: #ccd6d1;
+
+  /* Metin */
+  --color-ink: #16241e;
+  --color-ink-body: #33443e;
+  --color-ink-soft: #5a6d66;
+  --color-ink-muted: #5b6e67;
+  --color-ink-dim: #60736c;
+  --color-gutter: #5d6f69;
+
+  /* Marka */
+  --color-brand: #0b7c63;
+  --color-brand-ink: #0a6a55;
+  --color-brand-tint: #ebf7f2;
+  --color-brand-tint-soft: #e1f3ed;
+  --color-brand-edge: #b6e0d3;
+  --color-brand-edge-soft: #c9e6db;
+  --color-brand-done: #9dc9bb;
+  --color-brand-done-ink: #3e7a69;
+
+  /* Vurgu (mor) — kapı, düşünme, kesme */
+  --color-accent: #5a37e0;
+  --color-accent-ink: #4a33cc;
+  --color-accent-tint: #f1eefe;
+  --color-accent-tint-soft: #ece7fd;
+  --color-accent-edge: #cdc2f4;
+  --color-accent-deep: #241a4d;
+
+  /* Durumlar: parlak nokta + okunur metin + zemin + kenar */
+  --color-run: #7c5cff;
+  --color-run-ink: #4a33cc;
+  --color-wait: #f5b544;
+  --color-wait-ink: #8a5a00;
+  --color-wait-tint: #fff8e6;
+  --color-wait-edge: #e4d296;
+  --color-ok: #0f9f7f;
+  --color-ok-ink: #0a6a55;
+  --color-err: #d93a2e;
+  --color-err-ink: #a3241a;
+  --color-err-tint: #fdf0ee;
+  --color-err-edge: #f0c4be;
+  --color-err-text: #8f2318;
+  --color-err-body: #7a3830;
+  --color-off: #5b6e67;
+  --color-off-ink: #4c5d57;
+
+  /* Build/lint zeytin yeşili — build logu ve değişmiş dosya işareti */
+  --color-build-tint: #eef6e6;
+  --color-build-ink: #496f1d;
+  --color-build-mark: #3e5f18;
+
+  /* Diff satırları */
+  --color-diff-add-text: #0a3b2f;
+  --color-diff-del-text: #7a2119;
+  --color-diff-add: #eef9f4;
+  --color-diff-add-gutter: #e0f3ea;
+  --color-diff-del: #fdf3f1;
+  --color-diff-del-gutter: #fae6e2;
+  --color-line-no: #a3b1ab;
+
+  /* Yan panel zemini (dosya ağacı, bağlam oluğu) ve soluk yol metni */
+  --color-pane: #fbfdfc;
+  --color-ink-faint: #8b9c95;
+
+  /* Onay kapısı kartı: mor gradyanın uçları ve yaş metni */
+  --color-gate-from: #efebfd;
+  --color-gate-to: #f5f2ff;
+  --color-gate-ink: #57439f;
+  /* Satır yorumu şeridi */
+  --color-accent-wash: #faf9ff;
+  --color-accent-edge-soft: #e6e0fb;
+
+  /* Başlık sayaçlarının sakin çubuğu */
+  --color-meter: #7cc7b2;
+
+  /* Build zaman çizgisi: ray, atlanan adım noktası, log içi hata satırı */
+  --color-rail-line: #dfe6e2;
+  --color-skip: #b3bfba;
+  --color-log-err: #bb3527;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tasarımdan: nokta nabzı (koşan iş), iskelet parıltısı, dönen spinner. */
+@keyframes ahtPulse {
+  0%, 100% { opacity: 1 }
+  50% { opacity: .25 }
+}
+@keyframes ahtShimmer {
+  0% { opacity: .35 }
+  50% { opacity: .8 }
+  100% { opacity: .35 }
+}
+@keyframes ahtSpin {
+  to { transform: rotate(360deg) }
+}
+
+.aht-pulse { animation: ahtPulse 2s infinite }
+.aht-shimmer { animation: ahtShimmer 1.4s infinite }
+.aht-spin { animation: ahtSpin .8s linear infinite }
+
+/* Uzun akışlarda satır kırılması: log ve diff metni asla yatay kaydırmaz. */
+.aht-wrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Hareket hassasiyeti: nabız/parıltı dekoratiftir, kapatılabilir. */
+@media (prefers-reduced-motion: reduce) {
+  .aht-pulse, .aht-shimmer, .aht-spin { animation: none }
+}

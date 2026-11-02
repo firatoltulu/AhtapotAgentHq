@@ -1,0 +1,31 @@
+node_modules/
+dist/
+/build/
+*.tsbuildinfo
+
+# Runtime data — ASLA commit edilmez
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Elle kurulan geçici betik/çıktılar (`q.v15.cjs`, `q.compose.yml` gibi).
+# Canlı ortamı elle ayağa kaldırırken kullanılıyor ve kimlik taşıyabiliyorlar.
+q.*
+
+# Sırlar
+.env
+.env.*
+!.env.example
+keys.txt
+secrets/
+
+# Editör / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Log
+*.log
+logs/

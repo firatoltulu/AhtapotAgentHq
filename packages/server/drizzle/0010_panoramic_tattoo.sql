@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `reference_paths` text DEFAULT '[]' NOT NULL;

@@ -1,0 +1,176 @@
+# Ahtapot sürümü çıkarır: sürümü conventional commit'lerden hesaplar, server
+# imajını ghcr.io'ya yayınlar, sonra tag'i ve GitHub Release'i açar.
+#
+# YAYIN YALNIZ ELLE TETİKLENİR (Northwind'in `ci.yml`'i ile aynı karar). Önceden
+# yayın `v*` tag'inin push'una bağlıydı: sürümü insan hesaplıyor, tag'i elle
+# atıyor, ardından imajın çıkmasını bekliyordu. Numara elle seçildiği için
+# atlama ve tekrar riski vardı; tag atmak tek başına yayın demekti.
+#
+# SIRA BAĞLAYICI: imaj → tag + Release. Tag en sonda açılır; build düşerse
+# geride yayınlanmamış bir sürümü gösteren tag kalmaz ve bir sonraki koşu
+# aynı numarayı yeniden hesaplar.
+#
+# Tag'i bu workflow GITHUB_TOKEN ile açar. GitHub o token'la açılan tag için
+# başka workflow tetiklemez; elle atılan bir `v*` tag'i de artık hiçbir şey
+# yayınlamaz (`docker-server.yml` tag'i dinlemiyor).
+#
+# Girdi adları Ahtapot'un kendi `release` profil bölümüyle uyumlu (varsayılan
+# `file: release.yml`, `bumpInput: bump`; `correlationInput: ahtapot_id`
+# verilirse koşu `run-name` üzerinden kesin eşlenir). Yani Ahtapot kendi
+# sürümünü Release kartından da çıkarabilir.
+name: release
+run-name: release ${{ inputs.ahtapot_id || inputs.bump }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Sürüm artışı (auto: commit başlıklarından)"
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
+      dry_run:
+        description: "Yalnız sürümü hesapla, yayınlama"
+        type: boolean
+        default: false
+      ahtapot_id:
+        description: "Ahtapot yayın kimliği (koşu eşlemesi için; elle boş bırak)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+# Aynı anda iki yayın aynı son tag'i okuyup aynı numarayı hesaplardı.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Sürümü hesapla
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.calc.outputs.version }}
+      sha: ${{ steps.calc.outputs.sha }}
+    steps:
+      # `workflow_dispatch` her dalda başlatılabiliyor. Kontrol yoksa bir
+      # feature dalının imajı main için hesaplanmış sürümle yayınlanırdı.
+      - name: Dal kontrolü
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Yayın yalnız main'den çıkar (koşulan: ${GITHUB_REF})"
+          exit 1
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0        # tag geçmişi ve commit aralığı; sığ klon yetmez.
+          persist-credentials: false
+
+      # Kural `packages/server/src/release/semver.ts` → `inferBump` ile aynı:
+      # `type!:` ya da gövdede `BREAKING CHANGE` → major, `feat` → minor, kalan
+      # her şey patch. Zamanlı yayınla elle yayın aynı sürümü üretmeli.
+      #
+      # Yalnız kararlı `vX.Y.Z` tag'leri sürüm sayılır; `-rc` gibi ön sürümün
+      # üstüne bump etmek atlama üretirdi (semver.ts'teki gerekçe).
+      - name: Sonraki sürümü hesapla
+        id: calc
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          set -euo pipefail
+
+          last="$(git tag --list 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)"
+          if [ -n "$last" ]; then
+            range="${last}..HEAD"
+            IFS=. read -r major minor patch <<< "${last#v}"
+          else
+            range="HEAD"
+            major=0; minor=0; patch=0
+          fi
+
+          count="$(git rev-list --count "$range")"
+          if [ "$count" -eq 0 ]; then
+            echo "::error::${last}'den beri commit yok; boş sürüm yayınlanmaz."
+            exit 1
+          fi
+
+          bump="$BUMP"
+          if [ "$bump" = "auto" ]; then
+            bump=patch
+            re_major='^[[:alnum:]_]+(\([^)]*\))?!:'
+            re_minor='^feat(\([^)]*\))?:'
+            # Kayıt ayırıcısı 0x1e: gövde çok satırlı, satırla bölmek olmaz.
+            while IFS= read -r -d $'\x1e' msg; do
+              msg="${msg#$'\n'}"
+              subject="${msg%%$'\n'*}"
+              if [[ $subject =~ $re_major ]] || grep -qE '^BREAKING[ -]CHANGE:' <<< "$msg"; then
+                bump=major
+                break
+              fi
+              if [[ $subject =~ $re_minor ]]; then bump=minor; fi
+            done < <(git log --format='%B%x1e' "$range")
+          fi
+
+          case "$bump" in
+            major) major=$((major + 1)); minor=0; patch=0 ;;
+            minor) minor=$((minor + 1)); patch=0 ;;
+            patch) patch=$((patch + 1)) ;;
+            *) echo "::error::Geçersiz bump: $bump"; exit 1 ;;
+          esac
+          version="${major}.${minor}.${patch}"
+
+          # Sürüm ve sha AYNI anda sabitlenir: imaj da tag de bu commit'ten çıkar,
+          # koşu sürerken main'e düşen merge yayına karışmaz.
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Sürüm"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Son tag | \`${last:-yok}\` |"
+            echo "| Commit | ${count} |"
+            echo "| Artış | ${bump} (istenen: ${BUMP}) |"
+            echo "| Sonraki | \`v${version}\` |"
+            echo "| Kuru çalışma | ${{ inputs.dry_run }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "v${version} (${bump}, ${count} commit, son: ${last:-yok})"
+
+  docker:
+    name: İmajı yayınla
+    needs: version
+    if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker-server.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      ref: ${{ needs.version.outputs.sha }}
+      push: true
+
+  release:
+    name: Tag ve Release
+    needs: [version, docker]
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Checkout yok: `gh release create` tag'i API'de, sabitlenen commit'e açar.
+      # Release notları GitHub'ın kendi üretimi (önceki tag'den beri PR'lar).
+      - name: Tag ve Release oluştur
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.version.outputs.version }}
+          SHA: ${{ needs.version.outputs.sha }}
+        run: |
+          set -euo pipefail
+          gh release create "v${VERSION}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${SHA}" \
+            --title "v${VERSION}" \
+            --generate-notes

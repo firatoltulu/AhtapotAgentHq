@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `base_sha` text;

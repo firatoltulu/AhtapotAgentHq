@@ -1,0 +1,100 @@
+# AhtapotAgent server+web imajını (docker/server/Dockerfile) build eder;
+# yayında ghcr.io'ya push eder. Sunucu tarafı deploy'u KOŞMAZ — `docker compose
+# pull` ile güncelleme sunucuda elle yapılır (bkz. deploy talimatı).
+#
+# İmaj YALNIZ `release.yml` çağırdığında yayınlanır (`workflow_call`,
+# `push: true`). Önceden `v*` tag'inin push'u yayın demekti; sürüm artık
+# conventional commit'lerden hesaplanıyor ve tag'i release.yml imajdan SONRA
+# açıyor. Tag'i dinlemek kalsaydı elle atılan bir tag yine yayın çıkarırdı.
+#
+# PR ve main push'unda KOŞMAZ: kodun derlendiğini `ci.yml` ~1 dk'da doğrular,
+# bu build 2-6 dk sürüyor ve main'de hiçbir şey yayınlamıyordu. Docker'a özgü
+# bir kusur (COPY'nin olmayan yolu göstermesi — geçmişte hepsi Dockerfile/
+# .dockerignore değişikliğinden çıktı) yayın build'inde push'tan ÖNCE düşer;
+# Dockerfile'a dokunan bir PR'ı merge etmeden elle tetiklemek onu erken yakalar.
+name: docker-server
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Yayınlanan sürüm (`1.19.0`, `v` öneksiz)"
+        type: string
+        required: true
+      ref:
+        description: "Build edilecek commit (release.yml sabitler)"
+        type: string
+        required: true
+      push:
+        type: boolean
+        default: false
+  # Elle tetikleme yalnız build'i doğrular (push etmez): Dockerfile'a
+  # dokunan bir değişikliği merge etmeden denemek için.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  # ghcr.io yalnız küçük harf kabul eder; github.repository_owner org adını
+  # olduğu gibi verir — push 403/400 ile düşerdi.
+  IMAGE_NAME: firatoltulu/ahtapot-server
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Elle tetiklemede `inputs.ref` boştur → koşulan dal.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: ghcr.io oturum aç
+        # Elle tetiklemede `inputs.push` tanımsız → false; yalnız build doğrular.
+        if: inputs.push == true
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Etiketleri türet
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # Sürüm ref'ten değil girdiden gelir (`value=`): koşu dal üzerinde,
+          # tag henüz yok. Elle tetiklemede `version` boş → semver etiketleri
+          # üretilmez, zaten push da edilmez.
+          tags: |
+            type=semver,pattern={{version}},value=v${{ inputs.version }},enable=${{ inputs.version != '' }}
+            type=semver,pattern={{major}}.{{minor}},value=v${{ inputs.version }},enable=${{ inputs.version != '' }}
+            type=raw,value=latest,enable=${{ inputs.push == true }}
+
+      # UI'daki sürüm (`src/version.ts` açılışta okur). Yayında `1.14.5`;
+      # elle tetiklemede dal adı.
+      - name: version.txt yaz
+        env:
+          VERSION: ${{ inputs.version || steps.meta.outputs.version }}
+        run: printf '%s\n' "$VERSION" > version.txt
+
+      - name: Build (ve push yalnız yayında)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/server/Dockerfile
+          push: ${{ inputs.push == true }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # Attestation eklenince buildx imajı index + amd64 manifest +
+          # attestation olarak push ediyor ve ghcr her yayını ÜÇ sürüm satırı
+          # olarak listeliyordu (ölçüldü, 2026-09-23). Attestation'ı okuyan
+          # bir şey yok; kapalıyken yayın başına tek manifest, tek satır.
+          provenance: false

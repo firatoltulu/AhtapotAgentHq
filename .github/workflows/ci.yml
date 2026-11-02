@@ -1,0 +1,48 @@
+# Her PR'da ve main'e her push'ta kodun derlendiğini doğrular: `npm ci` +
+# tüm workspace'lerde `npm run build` (tsc -b; web'de ayrıca vite build).
+#
+# Kodu Docker build DEĞİL bu doğrular. Docker build aynı derlemeyi imajın içinde
+# de yapıyor, ama üstüne apt kurulumu, native `better-sqlite3` derlemesi ve imaj
+# export'u ekliyordu: koşu başına 2-6 dk. Geçmişte düşen koşuların TS hatası
+# olanlarını bu job da yakalardı. Docker'a özgü kusurlar (COPY'nin olmayan bir
+# yolu göstermesi) yalnız Dockerfile/.dockerignore/bağımlılık değişince
+# çıkıyordu; o yüzden docker-*.yml PR'da yalnız o yollarla tetikleniyor.
+#
+# Server imajı `bridge`'i derlemiyordu; burada tüm workspace'ler derleniyor.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Aynı PR'a art arda push'ta eskisi boşuna koşmasın; main'deki koşular iptal
+# edilmez (her merge'ün sonucu görülmeli). main'de grup koşu başına benzersiz:
+# `cancel-in-progress: false` yalnız KOŞANI korur — aynı grupta bekleyen bir
+# koşu, sonra gelen tarafından yine iptal edilir; art arda iki merge'ün
+# ortancası hiç koşmazdı.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # `npm ci` bağımlılıkların install script'lerini koşturur; token
+      # .git/config'te kalırsa onlara açık olur. Sonraki adımlar git'e yazmıyor.
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
