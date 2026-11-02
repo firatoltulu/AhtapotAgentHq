@@ -21,7 +21,6 @@ olduğunu söyler.**
 
 > **Ad geçici.** `packages/shared/src/brand.ts` tek kaynaktır.
 
-- Kullanıcı tarafı (UI'da adım adım): [`docs/kullanim-kilavuzu.md`](docs/kullanim-kilavuzu.md)
 - Çalışma kuralları (agent ve geliştirici): [`CLAUDE.md`](CLAUDE.md)
 
 ---
@@ -212,9 +211,7 @@ Kaynak: `packages/server/src/config/index.ts`. Ayrıntılı açıklamalar
 ## Proje bağlama (akış)
 
 Hedef proje sistemin parçası **değildir**; dışarıdan bağlanır. Bağlama bir kez
-yapılır, sonra o projeye istediğiniz kadar iş girersiniz. UI tarafı
-[kullanım kılavuzunda](docs/kullanim-kilavuzu.md#2-proje-bağlama) adım adım;
-burada akış ve ilgili uçlar:
+yapılır, sonra o projeye istediğiniz kadar iş girersiniz. Akış ve ilgili uçlar:
 
 ```
 1. Workspace ekle ──► 2. Analyst taraması ──► 3. Taslak profil
@@ -387,7 +384,6 @@ WebSocket'e giden her metin sır maskelemesinden geçer.
 
 | Dosya | Ne |
 |---|---|
-| [`docs/kullanim-kilavuzu.md`](docs/kullanim-kilavuzu.md) | Kullanım kılavuzu |
 | [`CLAUDE.md`](CLAUDE.md) | Çalışma kuralları |
 
 ---

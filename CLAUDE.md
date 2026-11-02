@@ -13,7 +13,6 @@ yalnız o dosya düzenlenir.
 | Dosya | Ne |
 |---|---|
 | [`README.md`](README.md) | Kurulum, ortam değişkenleri, mimari ve iş akışı diyagramları |
-| [`docs/kullanim-kilavuzu.md`](docs/kullanim-kilavuzu.md) | UI'dan kullanım, adım adım |
 
 Mimariyi değiştirecek bir karar vermeden önce gerekçesini yaz ve kullanıcıya sor.
 
