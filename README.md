@@ -36,6 +36,7 @@ olduğunu söyler.**
 6. [Geliştirme](#geliştirme)
 7. [Sorun giderme](#sorun-giderme)
 8. [Mimari ve belgeler](#mimari-ve-belgeler)
+9. [Yol haritası](#yol-haritası)
 
 ---
 
@@ -379,3 +380,22 @@ WebSocket'e giden her metin sır maskelemesinden geçer.
 | [`docs/plan/00-master-plan.md`](docs/plan/00-master-plan.md) | Onaylı ana plan: mimari, durum makinesi, fazlar |
 | [`docs/plan/01-decisions.md`](docs/plan/01-decisions.md) | Kararlar ve gerekçeleri |
 | [`docs/plan/02-status.md`](docs/plan/02-status.md) | Ne bitti, ne sırada |
+
+---
+
+## Yol haritası
+
+Bugün sistem tek yöneticili: giriş tek bir `AHTAPOT_ADMIN_TOKEN` ve sistem
+geneli bir TOTP ile korunuyor, veri SQLite'ta. Sıradaki kilometre taşları:
+
+- [ ] **Çoklu kullanıcı** — her kişinin kendi hesabı ve oturumu; işler,
+      onaylar ve sohbetler kimin yaptığıyla kaydedilir.
+- [ ] **Kullanıcı ve takım bazlı workspace** — projeler bir kullanıcıya ya da
+      takıma ait olur; erişim ve onay yetkisi buna göre ayrılır.
+- [ ] **PostgreSQL desteği** — şema baştan taşınabilir kurallarla yazıldı
+      (UUIDv7 TEXT PK, ISO-8601 zaman, enum yok); SQLite yanında PostgreSQL
+      sürücüsü.
+- [ ] **Kullanıcı bazlı 2FA** — ikinci faktörü her kullanıcı kendi hesabında
+      açar, kapatır ve sıfırlar; sistem geneli `AHTAPOT_RESET_2FA` yerine.
+- [ ] **UI/UX iyileştirmeleri** — daha sade ve tutarlı bir arayüz, daha iyi
+      akış görünürlüğü.
