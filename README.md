@@ -360,6 +360,18 @@ sorulacak soru: *bu her proje için doğru mu, yoksa bu projenin tercihi mi?*
 
 ## Mimari ve belgeler
 
+![AhtapotAgent mimarisi](docs/diagrams/architecture.svg)
+
+Sunucu tek durum otoritesidir: agent'lar Docker sandbox'ında koşar ve sunucuya
+`/bridge` WebSocket'iyle bağlanır, her iş kendi worktree volume'ünü ve canlı
+ortamını alır. İnsan canlı ortamı doğrudan porttan test eder.
+
+![Bir işin yolculuğu](docs/diagrams/agent-flow.svg)
+
+Kesikli ok dört kaynaktan gelir: kırmızı build, canlı test kusuru, QA hatası ya
+da PR reddi işi Developer'a döndürür. Agent koşarken insan her adımda onunla
+konuşabilir. Diyagramların kaynakları `docs/diagrams/*.html`.
+
 ```
 packages/shared   Zod şemaları — DB, REST, WS ve agent çıktısı tek kaynaktan
 packages/server   Fastify + WebSocket + Drizzle + Agent SDK sürücüsü (modüler monolit)
