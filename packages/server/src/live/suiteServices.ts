@@ -14,7 +14,7 @@ const HEALTH_INTERVAL_MS = 2_000;
  *
  * Servisler canlı ortamdakiyle AYNI adla (ağ takma adı) kalkar: `appEnv`deki
  * `Host=postgres` / `redis:6379` canlıda compose ağında, testte bu ağda
- * çözülür — değişkenler iki bağlamda da aynı kalır (kararlar §38). Agent
+ * çözülür — değişkenler iki bağlamda da aynı kalır. Agent
  * konteyneri koşu süresince ağa bağlanır; komutlar orada koşuyor.
  *
  * Veri kalıcı DEĞİL: `dataPath` bağlanmaz, her koşu boş servisle başlar

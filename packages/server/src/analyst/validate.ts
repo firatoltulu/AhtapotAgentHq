@@ -333,7 +333,7 @@ export async function validateProfile(profile: ProjectProfile, deps: ValidateDep
     }
     if (usesAppEnv) {
       // Takım env'i yalnız teste ÖZGÜ farklar için; ortak bir değişkeni
-      // ezmek canlı ortam ile testi yeniden ayrıştırır (kararlar §38).
+      // ezmek canlı ortam ile testi yeniden ayrıştırır.
       const shadowed = [...new Set(commands.flatMap((c) => Object.keys(c.env)).filter((k) => Object.hasOwn(profile.appEnv, k)))];
       if (shadowed.length > 0) {
         push(`test.${suite.id}.env`, "warn", `${suite.id}: komut env'i appEnv'deki değişkeni eziyor: ${shadowed.join(", ")} — test canlı ortamdan farklı yapılandırmayla koşar`);

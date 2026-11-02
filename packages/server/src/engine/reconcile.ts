@@ -140,7 +140,7 @@ export async function reconcile(
     .set({ status: "failed", error: "sunucu yeniden başladı; senaryolar yarıda kaldı" })
     .where(eq(schema.testScenarios.status, "running")).run();
 
-  // 1b'') Sahipsiz ikinci göz eleştirileri (§42) — aynı gerekçe.
+  // 1b'') Sahipsiz ikinci göz eleştirileri — aynı gerekçe.
   db.update(schema.critiques)
     .set({ status: "failed", error: "sunucu yeniden başladı; eleştiri yarıda kaldı", finishedAt: new Date().toISOString() })
     .where(eq(schema.critiques.status, "running")).run();

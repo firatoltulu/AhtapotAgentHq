@@ -22,8 +22,8 @@ import { execGit, shellQuote, type CommandExecutor } from "./executor.js";
  * taraf güvenilmez.
  *
  * Servis isteyen takımlar üst düzey `services` kataloğundan adla çözülür;
- * `cloneDb` açıksa her koşu şablondan taze bir klon alır (kararlar §37).
- * Böyle takımlar canlı ortamla aynı `appEnv`i alır (kararlar §38).
+ * `cloneDb` açıksa her koşu şablondan taze bir klon alır.
+ * Böyle takımlar canlı ortamla aynı `appEnv`i alır.
  */
 
 export interface SuiteOutcome extends TestResult {
@@ -195,7 +195,7 @@ export class TestGate {
       this.log(input.jobId, `▷ ${suite.id}: servisler — ${found.map((s) => { const a = serviceAddress(s); return `${s.name}@${a.host}:${a.port}`; }).join(", ")}`);
     }
 
-    // Uygulama env'i canlı ortamla AYNI tablodan (kararlar §38); takımın
+    // Uygulama env'i canlı ortamla AYNI tablodan; takımın
     // komut env'i yalnız teste özgü farklar için. Klon yer tutucusu klon
     // AÇILMADAN denetlenir: açılıp hemen düşürülecek bir klon boşa 9 sn.
     const appEnv = suiteUsesAppEnv(suite) ? input.profile.appEnv : {};

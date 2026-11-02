@@ -45,9 +45,9 @@ export interface TransportRunOptions {
   /** Agent soru sorunca çağrılır; cevap promise'i tur boyunca bekletilir. */
   askUser?: AskUser;
   askTimeoutMinutes?: number;
-  /** Playwright MCP (karar §41). Yalnız `supports("browser")` olan taşıma uygular. */
+  /** Playwright MCP. Yalnız `supports("browser")` olan taşıma uygular. */
   browser?: BrowserRunConfig;
-  /** Trail MCP (karar §44). Yalnız `supports("codegraph")` olan taşıma uygular. */
+  /** Trail MCP. Yalnız `supports("codegraph")` olan taşıma uygular. */
   codeGraph?: CodeGraphRunConfig;
 }
 
@@ -56,7 +56,7 @@ export interface StartedRun {
   /** Turu keser. Canlı kanal varsa kapatır. */
   abort(reason: string): Promise<void>;
   /**
-   * Mentor önerisinin teslim kolu (karar §33): `hold` sıradaki araç çağrısını
+   * Mentor önerisinin teslim kolu: `hold` sıradaki araç çağrısını
    * bekletir, `release` öneriyi o çağrıya ek bağlam olarak bırakır. Yoksa
    * (eski köprü) bu koşuya öneri teslim edilemez.
    */
@@ -158,7 +158,7 @@ export class LocalTransport implements AgentTransport {
         ...(opts.effort ? { effort: opts.effort } : {}),
         cwd: opts.cwd,
         maxTurns: opts.maxTurns,
-        // Bütçe YALNIZ mentorda SDK'ya verilir: danışma başına tavan §33'nin
+        // Bütçe YALNIZ mentorda SDK'ya verilir: danışma başına tavan mentor tasarımının
         // parçası. Diğer rollerin `maxBudgetUsd`i bugün iki taşımada da SDK'ya
         // gitmiyor (köprü de okumuyor); onu açmak ayrı bir karar — analiz ya
         // da triage turu sürüm yükseltmede yarıda kesilmeye başlamamalı.

@@ -69,7 +69,7 @@ export interface RunOptions {
   nested?: boolean;
   /** Playwright MCP; taşıma `browser` yeteneğini bildirmiyorsa düşer (bkz. `AgentTransport.supports`). */
   browser?: BrowserRunConfig;
-  /** Trail MCP (karar §44); taşıma `codegraph` yeteneğini bildirmiyorsa düşer. */
+  /** Trail MCP; taşıma `codegraph` yeteneğini bildirmiyorsa düşer. */
   codeGraph?: CodeGraphRunConfig;
 }
 
@@ -91,7 +91,7 @@ export interface RunResult {
 }
 
 /**
- * İş + rol için döngü tespiti açık mı (karar §33)? `null` → izlenmez.
+ * İş + rol için döngü tespiti açık mı? `null` → izlenmez.
  *
  * Runner profili bilmez; karar motorun. Her koşunun başında bir kez sorulur.
  */

@@ -389,9 +389,6 @@ WebSocket'e giden her metin sır maskelemesinden geçer.
 |---|---|
 | [`docs/kullanim-kilavuzu.md`](docs/kullanim-kilavuzu.md) | Kullanım kılavuzu |
 | [`CLAUDE.md`](CLAUDE.md) | Çalışma kuralları |
-| [`docs/plan/00-master-plan.md`](docs/plan/00-master-plan.md) | Onaylı ana plan: mimari, durum makinesi, fazlar |
-| [`docs/plan/01-decisions.md`](docs/plan/01-decisions.md) | Kararlar ve gerekçeleri |
-| [`docs/plan/02-status.md`](docs/plan/02-status.md) | Ne bitti, ne sırada |
 
 ---
 

@@ -187,7 +187,7 @@ export function PlanTab({
 }: {
   jobId: string;
   running: boolean;
-  /** İkinci gözün işaretli bulguları — red gerekçesine girer (§42). */
+  /** İkinci gözün işaretli bulguları — red gerekçesine girer. */
   critiquePicks: string[];
   onCritiquePicks?: (items: string[]) => void;
   /** Profilin model merdiveni — safha kapısındaki model seçicisi için. */
@@ -1113,7 +1113,7 @@ function MobileQuestion({
 
 /** Şemanın kalan alanları: model önerisi, test stratejisi, kapsam. Boşsa çizilmez. */
 /**
- * Gereksinimler (§42): iş tanımı nasıl anlaşıldı. Alıntı ham metne geri
+ * Gereksinimler: iş tanımı nasıl anlaşıldı. Alıntı ham metne geri
  * bağlar; hiçbir safhanın karşılamadığı gereksinim öne çıkar — planın
  * atladığı istek onaydan önce görünsün. Eski planlarda liste yok.
  */

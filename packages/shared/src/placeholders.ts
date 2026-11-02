@@ -27,7 +27,7 @@
  *
  * `$runId` ve `$dbCloneConnectionString` uygulama env'i (`appEnv`) içindir:
  * aynı değişkenler hem canlı ortamı hem entegrasyon takımlarını besler
- * (kararlar §38), değerleri bağlama göre değişir. Redis öneki `$jobIdShort`
+ *, değerleri bağlama göre değişir. Redis öneki `$jobIdShort`
  * ile yazılırsa canlı ortam ile aynı işin testi aynı anahtarları paylaşır;
  * `$runId` ile yazılırsa ayrışır.
  *

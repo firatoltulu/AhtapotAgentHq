@@ -11,13 +11,13 @@ import { isoNow } from "../db/index.js";
 import { codeMapDir, inModule, readCodeMap, writeCodeMap } from "./store.js";
 
 /**
- * Kod haritasını üretir ve taze tutar (karar §35).
+ * Kod haritasını üretir ve taze tutar.
  *
  * İki giriş:
  *  • `generate` — tam üretim (insan ister ya da harita hiç yoksa ilk iş).
  *  • `refresh` — kaynak senkronundan sonra: değişen dosyaları künyelere
  *    eşler, bayatları işaretler ve ARKA PLANDA yeniden ürettirir. İş beklemez.
- *    Merge sonrası çağrıda işin dersleri de gelir (karar §39): dokunduğu
+ *    Merge sonrası çağrıda işin dersleri de gelir: dokunduğu
  *    künyeler aynı koşuda yeniden üretilir, haritacı dersi `pitfalls`a işler.
  *
  * Agent HOST'ta, kaynak checkout üzerinde ve salt okunur koşar (Analyst
@@ -149,7 +149,7 @@ export class CodeMapper {
   /**
    * Bekleyen dersleri künyelere eşler ve kuyruktan alır. Dokunduğu dosyalar
    * hiçbir künyeye düşmeyen ders atılır: not künyeye bağlı yaşar, bağlanacak
-   * künye yoksa yeri de yoktur (karar §39).
+   * künye yoksa yeri de yoktur.
    */
   private drainLessons(projectId: string, map: CodeMap): LessonTarget[] {
     const queued = this.pending.get(projectId);

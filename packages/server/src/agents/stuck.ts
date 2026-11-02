@@ -1,5 +1,5 @@
 /**
- * Döngü tespiti — agent takıldı mı? (karar §33)
+ * Döngü tespiti — agent takıldı mı?
  *
  * Agent'ın METNİNE bakılmaz, yalnız araç davranışına: LLM döngüde olduğunu
  * kabul etmiyor, "takılırsan sor" talimatı da bu yüzden işe yaramıyor.

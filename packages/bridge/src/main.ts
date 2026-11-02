@@ -38,7 +38,7 @@ const BRIDGE_VERSION = "0.4.0";
 const PLAYWRIGHT_MCP = process.env["AHTAPOT_PLAYWRIGHT_MCP"] ?? "/opt/playwright-mcp/node_modules/@playwright/mcp/cli.js";
 
 /**
- * Taban imajın kurduğu Trail CLI (karar §44). Yoksa `codegraph` yeteneği
+ * Taban imajın kurduğu Trail CLI. Yoksa `codegraph` yeteneği
  * bildirilmez; sunucu grafik kurmaz, prompt'a da araçları yazmaz.
  */
 const TRAIL_BIN = process.env["AHTAPOT_TRAIL_BIN"] ?? "/opt/trail-code/node_modules/.bin/trail";
@@ -86,7 +86,7 @@ interface ActiveRun {
   runId: string;
   q: Query;
   channel: AsyncQueue<SDKUserMessage> | null;
-  /** Mentor önerisinin teslim kapısı (karar §33). */
+  /** Mentor önerisinin teslim kapısı. */
   gate: GuideGate;
   /** Koşu içi olay sırası; devralmada `sinceSeq` bununla karşılaştırılır. */
   seq: number;
@@ -181,7 +181,7 @@ function userMessage(text: string): SDKUserMessage {
 }
 
 /**
- * Mentor önerisi kancası (karar §33): kapı tutuluyorsa araç çağrısı bekler,
+ * Mentor önerisi kancası: kapı tutuluyorsa araç çağrısı bekler,
  * öneri geldiyse o çağrıya ek bağlam olarak düşer. Kancanın kendi zaman
  * aşımı kapınınkinden uzun: kapı süresi dolunca zaten kendiliğinden açılır.
  */
@@ -198,7 +198,7 @@ function guideHooks(gate: GuideGate) {
 }
 
 /**
- * Koşu başına Playwright MCP (karar §41).
+ * Koşu başına Playwright MCP.
  *
  * Süreç kanıt dizininde başlar: `browser_take_screenshot`ın dosya adları
  * MCP'nin çalışma köküne göre çözülüyor; worktree'de başlasaydı görüntüler
@@ -262,7 +262,7 @@ function playwrightServer(cfg: BrowserRunConfig, runId: string): { server: Recor
 }
 
 /**
- * Koşu başına Trail MCP sunucuları (karar §44), repo başına bir tane.
+ * Koşu başına Trail MCP sunucuları, repo başına bir tane.
  *
  * Grafik motor tarafından önceden kurulmuştur; burada yalnız sunulur. Her
  * sorgu çalışma ağacına bakıp değişeni kendisi tazeler, yazdığı tek yer

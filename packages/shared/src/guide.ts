@@ -1,5 +1,5 @@
 /**
- * Mentor önerisinin koşan oturuma teslim kapısı (karar §33).
+ * Mentor önerisinin koşan oturuma teslim kapısı.
  *
  * Motor döngü sinyali yakalayınca `hold` der; agent'ın SIRADAKİ araç çağrısı
  * (`PreToolUse` kancası `take`i bekler) mentor cevabı gelene kadar durur.

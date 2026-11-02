@@ -149,7 +149,7 @@ export class Notifier {
     switch (e.type) {
       case "approval.required": {
         if (this.seen.has(`gate:${e.gateId}`)) return null;
-        // Otopilotlu işte safha kapısını kimse beklemiyor (karar §40, §43):
+        // Otopilotlu işte safha kapısını kimse beklemiyor:
         // kapı yayınlanır, otopilot hemen onaylar — bildirim ise yayına
         // bağlı olduğu için her safhada telefona düşüyordu. Kapı süre sonunda
         // hâlâ açıksa otopilot onu çözememiştir; o zaman insan duyar.

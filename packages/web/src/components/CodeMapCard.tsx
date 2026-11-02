@@ -7,11 +7,11 @@ import { api, type AgentReadStats } from "../api";
 import { Badge, Button, ErrorText, fmtAge, fmtTime } from "../ui";
 
 /**
- * Kod haritası (karar §35): durum, elle üretim, künyeler ve kullanım ölçümü.
+ * Kod haritası: durum, elle üretim, künyeler ve kullanım ölçümü.
  *
  * Kullanım satırı haritanın asıl sorusunu cevaplar: agent'lar `/codemap`i
  * gerçekten okuyor mu? Okumuyorsa harita (ve üstüne kurulacak öğrenilen
- * notlar) maliyetten ibarettir — §35'in ölçütü `agent-reads`.
+ * notlar) maliyetten ibarettir; ölçüt `agent-reads`.
  */
 export function CodeMapCard({ projectId }: { projectId: string }) {
   const qc = useQueryClient();

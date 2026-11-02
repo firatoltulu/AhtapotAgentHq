@@ -149,13 +149,13 @@ export async function buildApp(config: Config, overrides: AppOverrides = {}): Pr
   };
   const ports = new PortPool(handle.db, { from: config.portRangeFrom, to: config.portRangeTo });
   // Şablon DB tek yerde: canlı ortam klonunu da test takımlarının klonunu da
-  // aynı şablondan alır (kararlar §37).
+  // aynı şablondan alır.
   const templates = new TemplateDb({ docker: dockerApi, log: (l) => fastify.log.info({ template: l }) });
   const suiteDatabases = new TemplateSuiteDatabases({ docker: dockerApi, templates });
   const live = overrides.live ?? new LiveEnvironments({
     db: handle.db, hub, ports, artifactsDir,
     // Şablon DB (postgres projeleri): ortam iki aşamada kalkar, migrate+seed
-    // canlı ortamın içinde koşar. Bkz. docs/plan/04-template-db.md
+    // canlı ortamın içinde koşar.
     docker: dockerApi,
     templates,
     // Golden ESKİ YOL; postgres olmayan projeler için duruyor.
@@ -182,7 +182,7 @@ export async function buildApp(config: Config, overrides: AppOverrides = {}): Pr
     log: (obj, msg) => fastify.log.info(obj, msg),
   });
   const github = overrides.github ?? new GhCliClient();
-  // Kod haritası (karar §35): Analyst gibi host'ta, kaynak checkout üzerinde.
+  // Kod haritası: Analyst gibi host'ta, kaynak checkout üzerinde.
   const codeMap = new CodeMapper({
     runner, exec: hostExec, artifactsDir,
     log: (level, obj, msg) => fastify.log[level](obj, msg),

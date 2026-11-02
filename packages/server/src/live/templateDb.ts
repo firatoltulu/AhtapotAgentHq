@@ -13,7 +13,7 @@ import { dbDependency } from "./golden.js";
  *     O komut sadece migration koşmuyor: `Program.cs` önce Serilog'u kuruyor
  *     (Elasticsearch ister), Redis'i bağlıyor, migration'a ondan sonra geliyor.
  *     Uygulama `Program.cs:42`'de ES'e bağlanamayıp ÇIKIŞ 134 ile düştü.
- *  2. Her iş 1,4 GB'lık volume'ü kopyalıyordu — §11d'de ölçülen desenin aynısı:
+ *  2. Her iş 1,4 GB'lık volume'ü kopyalıyordu:
  *     kopyalamak kurmaktan pahalı.
  *
  * Şimdi: şablon CANLI ORTAMIN İÇİNDE kurulur (Redis ve ES zaten ayakta, aynı

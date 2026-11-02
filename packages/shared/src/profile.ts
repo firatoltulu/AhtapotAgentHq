@@ -240,7 +240,7 @@ export const ExecSchema = z.object({
   /**
    * Özel paket kaynakları (npm registry'si, NuGet feed'i). Kurulum (`setup`),
    * build ve test komutlarının HEPSİ kimliği görür — `npm ci` tek başına değil,
-   * `preSteps`teki `dotnet restore` da aynı feed'e gider. Bkz. kararlar §23.
+   * `preSteps`teki `dotnet restore` da aynı feed'e gider.
    */
   registries: z.array(PackageSourceSchema).default([]),
   env: z.record(z.string(), z.string()).default({}),
@@ -316,7 +316,7 @@ export const BuildSchema = z.object({
  * yazılıyordu (`live.dependencies` ve takımın kendi `services` listesi) ve
  * ikisi ayrışmıştı: canlı ortam `192.168.1.30`a bağlanırken entegrasyon
  * takımı compose adına (`Host=postgres`) bağlanmaya çalışıyor, hiç koşmuyordu
- * (Northwind, 2026-10-13). Bkz. kararlar §37.
+ * (Northwind, 2026-10-13).
  */
 export const ServiceSchema = z.object({
   name: z.string().min(1),
@@ -548,7 +548,7 @@ export const TestAccountSchema = z.object({
 export type TestAccount = z.infer<typeof TestAccountSchema>;
 
 /**
- * Canlı testte tarayıcı turu (karar §41): `tester` senaryoları çıkarır,
+ * Canlı testte tarayıcı turu: `tester` senaryoları çıkarır,
  * aynı oturumda Playwright MCP ile yürütür ve checklist'i ön işaretler.
  * Kapı değil, ön filtre: düşerse kapı yine açılır, karar insanındır.
  */
@@ -1081,7 +1081,7 @@ export const LocalReviewSchema = z.object({
 export type LocalReview = z.infer<typeof LocalReviewSchema>;
 
 /**
- * İkinci göz (karar §42): plan ve test senaryolarını ikinci bir model
+ * İkinci göz: plan ve test senaryolarını ikinci bir model
  * eleştirir, bulgu insana danışman notu olarak gider.
  *
  * Sağlayıcı (`protocol`, `baseUrl`, `keyRef`) `review.local`dan okunur —
@@ -1366,7 +1366,7 @@ export type TierRung = z.infer<typeof TierRungSchema>;
 /**
  * Triage — işin zorluğunu ölçüp modeli ona göre seçen ucuz tur.
  *
- * Sabit Opus sürdürülebilir değil (master-plan R6): bir yazım düzeltmesi
+ * Sabit Opus sürdürülebilir değil: bir yazım düzeltmesi
  * Opus'a gitmemeli, dört katmana yayılan bir iş de Haiku'ya. Triage girdiyi
  * (ve plan üretildikten sonra planı) ölçer, motor `deriveTier` ile seviyeye
  * çevirir, seviye burada modele düşer.
@@ -1445,7 +1445,7 @@ export type Triage = z.infer<typeof TriageSchema>;
 
 /**
  * Mentor — takılan agent'ı motor tespit eder, bir üst basamağa danışılır
- * (karar §33).
+ *.
  *
  * Tespit agent'ın METNİNDEN değil DAVRANIŞINDAN çıkarılır: LLM döngüde
  * olduğunu kabul etmiyor. Gözlenen (2026-10-09): canlı test ve CI
@@ -1521,10 +1521,10 @@ export const AgentsSchema = z.object({
   roles: z.record(z.string(), AgentRoleSchema).default({}),
   /** Model yönlendirmesi; `enabled:false` iken roller sabit modelleriyle koşar. */
   triage: TriageSchema.prefault({}),
-  /** Takılan agent'ın tespiti ve üst basamağa danışma (karar §33). */
+  /** Takılan agent'ın tespiti ve üst basamağa danışma. */
   mentor: MentorSchema.prefault({}),
   /**
-   * Kod haritası (karar §35): modül künyeleri dosya olarak durur, agent
+   * Kod haritası: modül künyeleri dosya olarak durur, agent
    * ihtiyacı kadar açar. Prompt'a yalnız yeri girer. Varsayılan kapalı —
    * üretimi bir agent koşusu, her proje istemeyebilir.
    */
@@ -1538,12 +1538,12 @@ export const AgentsSchema = z.object({
     /**
      * Merge edilen işin tuzaklarını (handoff, kırmızı build, insan reddi)
      * merge sonrası tazelemede haritacıya verir; genellenebilir olanı
-     * künyenin `pitfalls`ına işler (karar §39). Harita kapalıysa etkisiz.
+     * künyenin `pitfalls`ına işler. Harita kapalıysa etkisiz.
      */
     learn: z.boolean().default(false),
   }).prefault({}),
   /**
-   * Trail kod grafiği (karar §44): tree-sitter ile sembol + çağrı grafiği,
+   * Trail kod grafiği: tree-sitter ile sembol + çağrı grafiği,
    * ajana MCP araçları olarak sunulur. Kod haritasının yerine DEĞİL, yanına:
    * harita "bu modül ne iş yapar", grafik "bunu kim çağırıyor" sorusunu
    * cevaplar. Varsayılan kapalı — deney; kazanç `agent-reads` ile ölçülür.
@@ -1682,7 +1682,7 @@ export function upgradeLegacyProfile(doc: unknown, ctx?: z.core.$RefinementCtx):
 const LEGACY_DB_CONN_ENV = "DataSettings__DataConnectionString";
 
 /**
- * Uygulama env'i tekilleşmeden ÖNCE kaydedilmiş profili çevirir (kararlar §38).
+ * Uygulama env'i tekilleşmeden ÖNCE kaydedilmiş profili çevirir.
  *
  * Eski biçim: değişkenler `live.app.env`te, klon dizesini motor
  * `database.clone.connectionStringEnv` adına (boşsa Northwind'in adına)
@@ -1754,7 +1754,7 @@ export const ProjectProfileObjectSchema = z.object({
   services: z.array(ServiceSchema).default([]),
   /**
    * Uygulamanın ortam değişkenleri — canlı ortam ve servis/klon isteyen test
-   * takımları AYNI tablodan beslenir (kararlar §38). Eskiden canlı ortam
+   * takımları AYNI tablodan beslenir. Eskiden canlı ortam
    * `live.app.env`i, test takımı kendi `command.env`ini okuyordu; aynı
    * uygulama iki ayrı yapılandırmayla koşuyordu.
    *

@@ -250,7 +250,7 @@ export const jobs = sqliteTable(
       .notNull()
       .$defaultFn(() => []),
     /**
-     * TAMAMLANMIŞ adımlar (karar §34): bugün PR zinciri — güvenlik, kod
+     * TAMAMLANMIŞ adımlar: bugün PR zinciri — güvenlik, kod
      * kalitesi, yerel inceleme, bot incelemesi.
      *
      * Temiz geçen bir adım iz bırakmıyordu (tur sayaçları yalnız bulgu
@@ -626,7 +626,7 @@ export const testScenarios = sqliteTable(
 );
 
 /**
- * İkinci göz (karar §42): plan sürümünün ya da senaryo listesinin ikinci
+ * İkinci göz: plan sürümünün ya da senaryo listesinin ikinci
  * model tarafından eleştirisi.
  *
  * `plans`/`test_scenarios`a sütun değil, ayrı tablo: her plan sürümü ve her
@@ -648,7 +648,7 @@ export const critiques = sqliteTable(
     /** `failed`/`skipped` sebebi — insan neden koşmadığını görmeli. */
     error: text("error").notNull().default(""),
     requestedBy: text("requested_by").notNull().default("engine"),
-    /** Sağlayıcının bildirdiği; `cost_records`a yazılmaz (§20 ile aynı sınır). */
+    /** Sağlayıcının bildirdiği; `cost_records`a yazılmaz. */
     inputTokens: integer("input_tokens"),
     outputTokens: integer("output_tokens"),
     finishedAt: text("finished_at"),

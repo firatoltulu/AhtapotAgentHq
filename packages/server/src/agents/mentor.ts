@@ -3,7 +3,7 @@ import { MODEL_TIER_ORDER, type AgentRoleName, type ModelTier, type Triage } fro
 import type { StuckSignal } from "./stuck.js";
 
 /**
- * Mentor danışmasının saf parçaları (karar §33): basamak seçimi, soru
+ * Mentor danışmasının saf parçaları: basamak seçimi, soru
  * dosyası, önerinin sarılması. Koşuyu motor yapar.
  */
 
@@ -24,7 +24,7 @@ export interface ConsultRequest {
 /**
  * Model adının merdivendeki seviyesi.
  *
- * Koşu modeli adıyla gelir: safha seviyesi, zorlama (§22) ya da profil rolü
+ * Koşu modeli adıyla gelir: safha seviyesi, zorlama ya da profil rolü
  * hepsi sonunda bir modele çözülüyor. Aynı model iki basamakta varsa alttaki
  * alınır — mentor daha yukarıda aranır, eksik değil fazla temkin.
  */
@@ -36,7 +36,7 @@ export function tierOfModel(model: string, ladder: Triage["ladder"]): ModelTier 
 /**
  * Mentor basamağı: junior'un `attempt` basamak yukarısı, `maxTier`ı aşmadan.
  *
- * `rungFor` DEĞİL (§22 gerekçesi): eksik basamakta sessizce başka modele
+ * `rungFor` DEĞİL: eksik basamakta sessizce başka modele
  * düşerdi. Tanımsız basamak ve junior'la aynı model atlanır. Yukarıda
  * yeterince basamak yoksa en üsttekine razı olunur; hiç yoksa `null` —
  * bu agent'ın mentoru insandır.

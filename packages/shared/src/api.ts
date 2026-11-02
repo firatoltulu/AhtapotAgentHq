@@ -340,7 +340,7 @@ export const GenerateTestScenariosBodySchema = z.object({
 });
 export type GenerateTestScenariosBody = z.infer<typeof GenerateTestScenariosBodySchema>;
 
-/** İkinci gözü elle yeniden koştur (§42): plan sürümü ya da senaryo satırı. */
+/** İkinci gözü elle yeniden koştur: plan sürümü ya da senaryo satırı. */
 export const RequestCritiqueBodySchema = z.object({
   subject: CritiqueSubjectSchema,
   subjectId: z.string().min(1),

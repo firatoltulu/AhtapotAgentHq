@@ -328,7 +328,7 @@ export interface TestScenariosRow {
   createdAt: string;
 }
 
-/** İkinci göz (§42) satırı; `document` yalnız `ready`de dolu (şemaya uymazsa null). */
+/** İkinci göz satırı; `document` yalnız `ready`de dolu (şemaya uymazsa null). */
 export interface CritiqueRow {
   id: string;
   jobId: string;

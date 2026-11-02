@@ -157,7 +157,7 @@ export function toolView(e: ServerEvent): ToolView {
     case "agent.question":
       return empty("gate", "soru", e.text);
     case "agent.stuck":
-      // Gözlem modu (karar §33): motor döngüden şüpheleniyor, henüz müdahale yok.
+      // Gözlem modu: motor döngüden şüpheleniyor, henüz müdahale yok.
       return empty("gate", "döngü şüphesi", e.detail, `${e.role} · ${e.model}`);
     case "agent.mentor":
       // Danışma sonucu: öneri ya da neden atlandığı. Maliyet görünür olmalı —

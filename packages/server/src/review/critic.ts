@@ -6,7 +6,7 @@ import {
 import { extractBlock } from "../analyst/analyst.js";
 
 /**
- * İkinci göz (karar §42) — eleştirmenin göreceği metin ve çıktısının
+ * İkinci göz — eleştirmenin göreceği metin ve çıktısının
  * ayrıştırılması. Motoru, DB'yi, sağlayıcıyı bilmez.
  *
  * Eleştirmenin repo bağlamı YOK; gördüğü yalnız ham iş tanımı, Claude'un

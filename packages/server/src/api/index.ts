@@ -63,7 +63,7 @@ export interface ApiDeps {
   agentImages?: { ensureBase(): Promise<string> };
   /** Hedef repodaki release workflow'u; verilmezse release uçları kayıtlanmaz. */
   releases?: ReleaseService;
-  /** Kod haritası (karar §35); verilmezse harita uçları 404 döner. */
+  /** Kod haritası; verilmezse harita uçları 404 döner. */
   codeMap?: CodeMapper;
 }
 

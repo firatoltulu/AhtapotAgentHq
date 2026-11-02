@@ -88,7 +88,7 @@ import type { EventHub } from "../ws/hub.js";
 import type { AcquiredRuntime, DeveloperRuntime } from "./runtime.js";
 import { CODEGRAPH_ROOT, RESOURCES_MOUNT, jobReferenceMounts, referenceRepoPath } from "./runtime.js";
 
-/** Bir koşu için hazırlanmış kod grafiği (karar §44). */
+/** Bir koşu için hazırlanmış kod grafiği. */
 interface CodeGraphSetup {
   config: CodeGraphRunConfig;
   /** Salt okunur rollerin `allowedTools`una eklenecek MCP önekleri. */
@@ -157,7 +157,7 @@ export interface JobEngineDeps {
    */
   hostExec?: CommandExecutor;
   /**
-   * Kod haritası (karar §35). Yoksa ya da profilde kapalıysa harita
+   * Kod haritası. Yoksa ya da profilde kapalıysa harita
    * bağlanmaz, prompt'a satır girmez.
    */
   codeMap?: {
@@ -407,7 +407,7 @@ function excludedByReview(path: string, patterns: readonly string[]): boolean {
 /**
  * Bu durumlara girildiğinde kod yeniden değişebilir; PR öncesi kontrol
  * listesi `stale` işaretlenir, PR zinciri başında HEAD ile doğrulanır
- * (karar §34). NeedsAttention ve PRReview/CIWatch işaretlemez: yeniden
+ *. NeedsAttention ve PRReview/CIWatch işaretlemez: yeniden
  * deneme kaldığı yerden sürmeli.
  */
 const STEP_CHECK_RESET_STATES: ReadonlySet<JobState> = new Set<JobState>([
@@ -443,7 +443,7 @@ const READ_ONLY_DENY = [
 ] as const;
 
 /**
- * Mentor araçsız koşar (karar §33): host'ta, `tmpdir()` içinde. `allowedTools:
+ * Mentor araçsız koşar: host'ta, `tmpdir()` içinde. `allowedTools:
  * []` tek başına araçları KAPATMAZ (yalnız izin listesini boşaltır), bu
  * yüzden yerleşikler ayrıca reddedilir. Gördüğü her şey soru dosyasında.
  */
@@ -455,7 +455,7 @@ const MENTOR_DENY = [
 export class JobEngine {
   /** Süren koşuların canlı kanalları — chat.send buraya düşer. */
   private readonly channels = new Map<string, LiveInputChannel>();
-  /** Kod grafiği bildirimi iş başına bir kez (karar §44); bellekte, kayıp önemsiz. */
+  /** Kod grafiği bildirimi iş başına bir kez; bellekte, kayıp önemsiz. */
   private readonly codeGraphNoticed = new Set<string>();
   /**
    * Ortam hazırlığı bu işte yapıldı mı? Kurulum iş boyunca bir kezdir; bellekte
@@ -542,7 +542,7 @@ export class JobEngine {
     const recorded: ServerEvent[] = [];
     transition(this.deps.db, { jobId, to, phase, reason, actorType }, (tx) => {
       // Kod PRReview'dan önceki bir adımda yeniden DEĞİŞEBİLİR: PR öncesi
-      // denetimlerin "geçti" kaydı doğrulanana kadar geçersiz (karar §34).
+      // denetimlerin "geçti" kaydı doğrulanana kadar geçersiz.
       // Silinmez — eskiden silinince LiveTest'e "yeniden aç" kodu
       // değiştirmediği hâlde SAST'ı baştan koşturuyordu (yaşandı).
       // Aynı transaction'da: geçiş yazılıp kayıt kalırsa zincir eski
@@ -1118,7 +1118,7 @@ export class JobEngine {
   }
 
   /**
-   * Trail kod grafiği (karar §44): koşudan önce konteynerde kurar ya da
+   * Trail kod grafiği: koşudan önce konteynerde kurar ya da
    * tazeler, koşuya MCP yapılandırmasını, salt okunur rollere araç iznini ve
    * prompt notunu verir. Kurulamazsa koşu grafiksiz başlar — deney işi
    * durdurmamalı; insan bildirimden görür.
@@ -1352,7 +1352,7 @@ export class JobEngine {
       const gateId = this.openApproval(jobId, "plan", planId, payload);
       this.move(jobId, "PlanReview", "waiting", `plan v${this.planVersion(planId)} onay bekliyor`, "agent");
       this.deps.hub.publish(jobId, { type: "approval.required", gateId, kind: "plan", payload });
-      // Kapı açıldıktan SONRA: insan planı okurken eleştiri biter (§42).
+      // Kapı açıldıktan SONRA: insan planı okurken eleştiri biter.
       this.critiquePlan(jobId, profile, job, planId, doc);
     } catch (err) {
       this.fail(jobId, "planning_failed", err instanceof Error ? err.message : String(err));
@@ -1786,7 +1786,7 @@ export class JobEngine {
    * (son safha kapısı) `null`.
    */
   /**
-   * Runner'ın döngü tespiti için sorduğu politika (karar §33).
+   * Runner'ın döngü tespiti için sorduğu politika.
    *
    * Profil her koşuda yeniden okunur: insan izlemeyi iş sürerken açıp
    * kapatabilmeli. Analyst iş dışında; listede olsa da izlenmez.
@@ -1814,7 +1814,7 @@ export class JobEngine {
   }
 
   /**
-   * Takılan agent için bir üst basamağa danışır (karar §33). Dönen metin
+   * Takılan agent için bir üst basamağa danışır. Dönen metin
    * agent'a teslim edilir; `null` → danışma atlandı, agent kendi yolunda.
    *
    * Durum DEĞİŞMEZ, döngü sayaçlarına dokunulmaz (Kural 1): danışma bir
@@ -3601,7 +3601,7 @@ export class JobEngine {
   }
 
   /**
-   * Canlı testte tarayıcı turu (karar §41): liste yoksa `tester` çıkarır,
+   * Canlı testte tarayıcı turu: liste yoksa `tester` çıkarır,
    * aynı oturumda Playwright MCP ile yürütür, checklist'i `agent` kaynağıyla
    * işaretler. DAST gibi ön filtre: koşamazsa özet `skipped` taşır, kapı yine
    * açılır. Agent "kaldı"sı Developer'a ancak insan reddinde gider.
@@ -4003,7 +4003,7 @@ export class JobEngine {
   /**
    * `tester` turu: senaryo listesini üretir, satırı `ready` ya da `failed`
    * yazar. Düşerse fırlatır. Oturum kimliği döner — tarayıcı turu aynı
-   * oturumda sürer, kodu ve diff'i yeniden okumaz (karar §41).
+   * oturumda sürer, kodu ve diff'i yeniden okumaz.
    */
   private async produceScenarios(input: {
     jobId: string; id: string; profile: ProjectProfile; job: typeof schema.jobs.$inferSelect; planDoc: PlanDocument;
@@ -4050,7 +4050,7 @@ export class JobEngine {
       const clean = scrubScenarios(doc);
       finish({ status: "ready", document: clean });
       this.notice(jobId, `${doc.scenarios.length} canlı test senaryosu hazır.`);
-      // İkinci göz (§42) arka planda; tarayıcı turunu (§41) bekletmez.
+      // İkinci göz arka planda; tarayıcı turunu bekletmez.
       this.startCritique({ jobId, profile, subject: "scenarios", subjectId: id, prompt: () => buildScenariosCritique(job, planDoc, clean) });
       return { doc: clean, sessionId: resume };
     } catch (err) {
@@ -4061,7 +4061,7 @@ export class JobEngine {
     }
   }
 
-  // ── İkinci göz (§42) ─────────────────────────────────────────────────────
+  // ── İkinci göz ─────────────────────────────────────────────────────
 
   /**
    * Planı ya da senaryo listesini yerel incelemenin sağlayıcısındaki modele
@@ -4163,8 +4163,8 @@ export class JobEngine {
   }
 
   /**
-   * İkinci gözün yedeği: Claude havuzunda araçsız yan koşu (mentor kalıbı,
-   * §33). `nested`: asıl koşunun iptal kolunu ezmez, akışa agent.start/end
+   * İkinci gözün yedeği: Claude havuzunda araçsız yan koşu (mentor kalıbı).
+   * `nested`: asıl koşunun iptal kolunu ezmez, akışa agent.start/end
    * yazmaz. Kota imzasını runner `result`/hata nesnesinden okur (kural 6).
    * `completeText` sözleşmesine çevirir: FIRLATMAZ.
    */
@@ -4431,7 +4431,7 @@ export class JobEngine {
     try {
       if (!worktreePath) throw new Error("işin worktree'si yok");
       const { job } = this.load(jobId);
-      // Bu ağaçta testler zaten yazıldı ve yeşildi (karar §34, `qa.write`):
+      // Bu ağaçta testler zaten yazıldı ve yeşildi (`qa.write`):
       // "Yeniden kaldır"/LiveTest'e yeniden açılış sonrası onay QA agent'ını
       // ve takımları aynı kod üzerinde baştan koşturuyordu (yaşandı). İnsanın
       // açıkça QA'yı seçtiği "Yeniden aç → QA" `reuse` vermez.
@@ -4837,7 +4837,7 @@ export class JobEngine {
       // (kapı) → kod kalitesi; kalite güvenlik düzeltmelerini de denetler.
       //
       // Her adım bitince kontrol listesine yazılır; yeniden denemede (retry,
-      // kapı kararı) tamamlanmış adım koşulmaz (karar §34). "Bir tur daha"
+      // kapı kararı) tamamlanmış adım koşulmaz. "Bir tur daha"
       // (`securityNote`) insanın açık isteğidir, kayda bakmaz.
       const st = profile.workflow.review.static;
       if (st.enabled && !this.hasPr(jobId)) {
@@ -4978,7 +4978,7 @@ export class JobEngine {
   /** `reviewLoop()`da gerekçeyle yanıtlanmış (kod değişikliği gerektirmeyen) başlık id'leri. */
   /**
    * PR öncesi zincirin bu adımı daha önce tamamlandı mı? Tamamlandıysa
-   * akışa not düşülür ve adım atlanır (karar §34).
+   * akışa not düşülür ve adım atlanır.
    *
    * YAŞANDI: temiz geçen adım iz bırakmıyordu; PR açılmadan (push, kota,
    * Developer düzeltmesi) düşen iş "yeniden dene" ile güvenlik, kalite ve
@@ -5002,7 +5002,7 @@ export class JobEngine {
    * en son adımın `sha`sında zaten var; karşılaştırma ona yapılır.
    *
    * `syncBaseBeforePr`dan ÖNCE çağrılır: çakışmasız `main` merge'ü HEAD'i
-   * değiştirir ama kaydı geçersiz kılmaz (§32/§34).
+   * değiştirir ama kaydı geçersiz kılmaz.
    */
   private async revalidateSteps(jobId: string, profile: ProjectProfile, worktree: string): Promise<void> {
     const cur = this.deps.db.select({ c: schema.jobs.stepChecklist }).from(schema.jobs).where(eq(schema.jobs.id, jobId)).all()[0]?.c ?? {};
@@ -5128,7 +5128,7 @@ export class JobEngine {
    * `false` yalnız iş düştüğünde (`fail()` çağrıldı). Bu bir ön filtre, akışı
    * durdurmaz — kapı açmaz. `not_run`: inceleme koşamadı (anahtar yok, araç
    * düştü); kontrol listesine yazılmaz, yeniden denemede yeniden denenir.
-   * `done`: temiz, düzeltildi ya da tavan doldu — yeniden koşmaz (karar §34).
+   * `done`: temiz, düzeltildi ya da tavan doldu — yeniden koşmaz.
    *
    * Tur sayacı `loopCounts.local_review`da: yarıda kalan iş `retry()` ile
    * dönünce kaldığı turdan sürer, tavanı baştan harcamaz.
@@ -5149,7 +5149,7 @@ export class JobEngine {
       // Aracın göreceği aralık (`--from base --to HEAD`) insana da gösterilir:
       // "527 dosya" bayat tabandan mı, aracın sayımından mı geliyor ayırt edilsin.
       // Taban bir SHA değil dal adıysa `baseSha` yazılamamış demektir — yerel
-      // `main` bayatsa başkalarının commit'leri de bu listeye girer (§24).
+      // `main` bayatsa başkalarının commit'leri de bu listeye girer.
       //
       // `execGit` değil: o stderr'i de toplar, diff düşerse `fatal:` satırı
       // dosya sanılırdı. Yalnız stdout, yalnız başarılı çıkışta.
@@ -5199,7 +5199,7 @@ export class JobEngine {
       const partial = out.report.status === "partial" || out.report.status === "completed_with_errors" ? " (bazı dosyalar incelenemedi)" : "";
       // OCR bağlam için ilgili dosyaları da okuyor ve onlara da bulgu
       // yazıyor; aralık doğru olsa bile rapor PR'ın dosyalarıyla sınırlı
-      // değil. Bot yorumlarındaki kapsam süzgeci (§24) burada yoktu:
+      // değil. Bot yorumlarındaki kapsam süzgeci burada yoktu:
       // başkasının koduna ait bulgular Developer'a gidiyor, tur yakıyordu.
       const all = ocrThreads(out.report);
       const { inScope: threads, outOfScope } = await this.splitByScope(jobId, profile, all);
@@ -6103,7 +6103,7 @@ export class JobEngine {
    *
    * Rebase değil merge: PR squash'landığı için merge commit'i `main`e iz
    * bırakmaz; rebase ise çakışmayı commit commit çıkarır (agent N tur çözer)
-   * ve yeniden denemede push'lanmış dalı force-push'a zorlar (bkz. karar §32).
+   * ve yeniden denemede push'lanmış dalı force-push'a zorlar.
    *
    * Çekme düşerse iş durmaz (PR'daki `syncBase` yine yakalar); not düşülür.
    * false: `fail()` çağrıldı, ağaç merge öncesinde.
@@ -6179,8 +6179,8 @@ export class JobEngine {
     }
     setBase(merged.fetched);
     // Çakışma çözümü agent'ın yazdığı YENİ kod: önceki "geçti" kayıtları onu
-    // görmedi, PR öncesi denetimler yeniden koşmalı (karar §34). Çakışmasız
-    // merge silmez: uzak `main` incelenmiş sayılıyor (§32).
+    // görmedi, PR öncesi denetimler yeniden koşmalı. Çakışmasız
+    // merge silmez: uzak `main` incelenmiş sayılıyor.
     this.clearSteps(jobId, ["pr.security", "pr.quality", "pr.local_review"]);
     this.notice(jobId, `Uzak ${base} PR öncesi birleştirildi, ${merged.conflicts} çakışma çözüldü ve derlendi; PR öncesi denetimler bu kod için yeniden koşacak.`);
     return true;
@@ -7093,7 +7093,7 @@ export class JobEngine {
   }
 
   /**
-   * Merge edilen işin yaşadıkları — kod haritasına ders hammaddesi (karar §39).
+   * Merge edilen işin yaşadıkları — kod haritasına ders hammaddesi.
    *
    * Kaynaklar: bütün rollerin handoff'ları (tuzak, çözülemeyen madde, plandan
    * sapma), kırmızı build'ler ve insanın safha/canlı test retleri. Ayıklama
@@ -7254,7 +7254,7 @@ export function renderTestScenariosPrompt(
   return [
     "# İş", `Başlık: ${job.title}`, job.description ? `Açıklama:\n${job.description}` : "",
     `\n# Plan${stage === "plan" ? " (henüz onaylanmadı, kod yazılmadı)" : " (onaylı)"}`, plan.summary,
-    // Gereksinimler (§42): senaryoların `covers`ı bunlara bağlanır. Eski
+    // Gereksinimler: senaryoların `covers`ı bunlara bağlanır. Eski
     // planlarda yok — o zaman bölüm de yok, tester `covers`ı boş bırakır.
     plan.requirements.length ? "\n## Gereksinimler" : "",
     ...plan.requirements.map((r) => `- ${r.id}: ${r.text}`),
@@ -7406,7 +7406,7 @@ export async function copyBrowserEvidence(exec: CommandExecutor, dir: string, de
 }
 
 /**
- * Developer'a kararlı seçici kuralı (karar §41). Yalnız tarayıcı testi
+ * Developer'a kararlı seçici kuralı. Yalnız tarayıcı testi
  * açıkken: öznitelik adı projenin tercihi, kapalı projede not gürültü.
  */
 export function renderSelectorNote(profile: ProjectProfile): string {

@@ -125,7 +125,7 @@ export function JobDetailPage() {
   // yazılıyor, dikkat yuvasındaki red gerekçesine giriyor. Kapıya bağlı;
   // yeni kapı eski yorumu taşımaz.
   const [comments, setComments] = useState<{ gateId: string; items: LineComment[] } | null>(null);
-  // İkinci gözün (§42) işaretli bulguları — aynı kalıp: Plan sekmesinde
+  // İkinci gözün işaretli bulguları — aynı kalıp: Plan sekmesinde
   // işaretlenir, red gerekçesine girer; plan kapısına bağlı.
   const [critiquePicks, setCritiquePicks] = useState<{ gateId: string; items: string[] } | null>(null);
   // "Görüldü" kapı kimliğine bağlı ve yeniden yüklemede korunur: uzun bir
@@ -170,7 +170,7 @@ export function JobDetailPage() {
       if (e.type === "critique.updated") critique = true;
     }
     lastSeq.current = { jobId: id, seq: max };
-    // İkinci göz (§42) iş durumunu değiştirmez; yalnız kendi kartı tazelenir.
+    // İkinci göz iş durumunu değiştirmez; yalnız kendi kartı tazelenir.
     if (critique) void qc.invalidateQueries({ queryKey: ["critiques", id] });
     if (changed) {
       void qc.invalidateQueries({ queryKey: ["job", id] });

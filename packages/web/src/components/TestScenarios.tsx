@@ -126,7 +126,7 @@ export function TestScenariosCard({
       <ErrorText error={generate.error ?? q.error} />
 
       {doc && latest && !listless && <ScenarioList key={latest.id} jobId={jobId} row={latest} doc={doc} canMark={canMark} />}
-      {/* İkinci göz (§42): bulgular senaryo listesinin kalitesine dair;
+      {/* İkinci göz: bulgular senaryo listesinin kalitesine dair;
           red gerekçesine taşınmaz — red Developer'a gider, listeye değil. */}
       {doc && latest && <CritiqueCard jobId={jobId} subject="scenarios" subjectId={latest.id} />}
     </section>

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Kod haritası — projenin modül künyeleri (karar §35).
+ * Kod haritası — projenin modül künyeleri.
  *
  * Gerçek kaynak bu JSON'dur; agent'ın okuduğu `INDEX.md` ve
  * `modules/<id>.md` sunucuda bundan üretilir. Agent markdown yazmaz:
@@ -52,7 +52,7 @@ export const CodeMapSchema = z.object({
 export type CodeMap = z.infer<typeof CodeMapSchema>;
 
 /**
- * Merge edilmiş bir işin yaşadıkları — haritacıya ders hammaddesi (karar §39).
+ * Merge edilmiş bir işin yaşadıkları — haritacıya ders hammaddesi.
  *
  * Statik okuma sessiz bozulan derlemeyi, yanlış varsayılan sözleşmeyi
  * göremez; iş içinde çarpılan tuzak yalnız burada vardır. Not künyeye

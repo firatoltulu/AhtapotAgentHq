@@ -64,7 +64,7 @@ export interface LiveDeps {
   /**
    * Golden DB (ESKİ YOL — volume klonu). Şablon DB modeline geçildi; bu alan
    * yalnız `database.kind` postgres OLMAYAN projeler ve mevcut testler için
-   * duruyor. Bkz. docs/plan/04-template-db.md
+   * duruyor.
    */
   golden?: GoldenLike | null;
   /**
@@ -483,7 +483,7 @@ export class LiveEnvironments {
     // kendi veritabanı verilir. Eski golden volume yolu kaldırıldı: migrate
     // komutu uygulamanın tamamını ayağa kaldırıyor ve Redis + Elasticsearch
     // istiyordu, golden ise yalnız Postgres kaldırıyordu (çıkış 134, ölçüldü
-    // 2026-09-18). Ayrıntı: docs/plan/04-template-db.md
+    // 2026-09-18).
     const volumes = { ...(input.volumes ?? {}) };
     const dbDep = dbDependency(profile);
     const pgCreds = pgCredsFrom(profile);
@@ -544,7 +544,7 @@ export class LiveEnvironments {
       extraEnv.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS = livePublicHost(jobId, traefik.domain);
     }
 
-    // Uygulama env'i — entegrasyon takımlarıyla AYNI tablo (kararlar §38).
+    // Uygulama env'i — entegrasyon takımlarıyla AYNI tablo.
     // Klon dizesi yalnız profilin `$dbCloneConnectionString` yazdığı adlara
     // gider; klon yokken bu yer tutucu çözülemez ve ortam KALKMAZ. Eskiden
     // "uygulama profildeki bağlantıyı kullanacak" uyarısıyla devam ediliyordu;
@@ -993,7 +993,7 @@ export class LiveEnvironments {
   }
 
   /**
-   * Tarayıcı testinin hedefi (karar §41): canlı test adımında insana verilen
+   * Tarayıcı testinin hedefi: canlı test adımında insana verilen
    * adresin AYNISI — insan neyi açtıysa agent da onu açar.
    *
    * İstisna: adres loopback'teyse (`publishHost` verilmemiş, 127.0.0.1) iş

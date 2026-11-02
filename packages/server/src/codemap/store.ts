@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { CodeMapSchema, type CodeMap, type CodeMapModule } from "@ahtapot/shared";
 
 /**
- * Kod haritasının diskteki hâli (karar §35).
+ * Kod haritasının diskteki hâli.
  *
  * `<artifactsDir>/codemap/<projectId>/` — hedef workspace'e ASLA yazılmaz.
  * Dizin konteynere salt okunur bağlı olduğundan YERİNDE güncellenir:

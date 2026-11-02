@@ -141,7 +141,7 @@ export const ServerEventSchema = z.discriminatedUnion("type", [
   }),
 
   /**
-   * Motor agent'ın döngüde olduğundan şüpheleniyor (karar §33).
+   * Motor agent'ın döngüde olduğundan şüpheleniyor.
    *
    * Agent'ın metninden değil araç davranışından çıkarılır. Gözlem modunda
    * yalnız bu olay düşer; kayıtlı kalır çünkü eşikler bu kayıtlarla ölçülecek.
@@ -160,7 +160,7 @@ export const ServerEventSchema = z.discriminatedUnion("type", [
   }),
 
   /**
-   * Takılan agent bir üst basamağa danıştı (karar §33).
+   * Takılan agent bir üst basamağa danıştı.
    *
    * `advised`: öneri koşan oturuma teslim edilmek üzere bırakıldı.
    * `skipped`: danışma yapılmadı (`reason`): tavan, basamak yok, eski köprü,
@@ -224,7 +224,7 @@ export const ServerEventSchema = z.discriminatedUnion("type", [
   }),
 
   /**
-   * İkinci gözün (§42) durumu değişti. İçerik değil kimlik taşır: UI REST'ten
+   * İkinci gözün durumu değişti. İçerik değil kimlik taşır: UI REST'ten
    * yeniden çeker. Bulgular `critiques` satırında; olay replay'de yalnız
    * "burada bir eleştiri vardı" der.
    */
@@ -352,7 +352,7 @@ export const BridgeHelloSchema = z.object({
   droppedEvents: z.number().int().nonnegative().optional(),
   /**
    * Köprünün anladığı isteğe bağlı mesajlar. `guide`: `run.hold`/`run.guide`
-   * (karar §33). İmajı tazelenmemiş eski köprü bunu bildirmez; sunucu ona bu
+   *. İmajı tazelenmemiş eski köprü bunu bildirmez; sunucu ona bu
    * mesajları göndermez — tanımadığı mesajda koşu sessizce askıda kalmasın.
    */
   capabilities: z.array(z.string()).optional(),
@@ -408,7 +408,7 @@ export const BrowserRunConfigSchema = z.object({
 export type BrowserRunConfig = z.infer<typeof BrowserRunConfigSchema>;
 
 /**
- * Köprünün Trail kod grafiği MCP'sini nasıl başlatacağı (karar §44). Grafik
+ * Köprünün Trail kod grafiği MCP'sini nasıl başlatacağı. Grafik
  * koşudan ÖNCE motor tarafından kurulmuştur; köprü kurmaz, yalnız sunar.
  * Grafik dizini worktree'nin DIŞINDA: içeride olsaydı diff'e girerdi.
  */
@@ -458,12 +458,12 @@ export const ServerToBridgeSchema = z.discriminatedUnion("type", [
     appendSystemPrompt: z.string().optional(),
     resumeSessionId: z.string().nullable().optional(),
     /**
-     * Varsa koşuya Playwright MCP eklenir (karar §41). Yalnız `browser`
+     * Varsa koşuya Playwright MCP eklenir. Yalnız `browser`
      * yeteneğini bildiren köprüye gönderilir: eski köprü alanı sessizce
      * atar ve agent tarayıcısız koşardı.
      */
     browser: BrowserRunConfigSchema.optional(),
-    /** Varsa Trail MCP eklenir (karar §44). Yalnız `codegraph` yeteneğini bildiren köprüye. */
+    /** Varsa Trail MCP eklenir. Yalnız `codegraph` yeteneğini bildiren köprüye. */
     codeGraph: CodeGraphRunConfigSchema.optional(),
   }),
   /** Canlı mesaj — streaming input kanalına push edilir. */
@@ -491,7 +491,7 @@ export const ServerToBridgeSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("identity.set"), envName: z.string(), value: z.string() }),
   /**
    * Mentor danışması başladı: agent'ın sıradaki araç çağrısını beklet
-   * (karar §33). Süre dolarsa köprü kendiliğinden serbest bırakır.
+   *. Süre dolarsa köprü kendiliğinden serbest bırakır.
    */
   z.object({ type: z.literal("run.hold"), runId: z.string(), timeoutMs: z.number().int().positive() }),
   /** Mentor cevabı; `text` boşsa danışma atlandı, yalnız serbest bırakılır. */

@@ -170,7 +170,7 @@ export function registerFlowRoutes(fastify: FastifyInstance, deps: ApiDeps): voi
   });
 
   /**
-   * İkinci göz (§42) — işin tüm eleştirileri, yeniden eskiye. UI konuya
+   * İkinci göz — işin tüm eleştirileri, yeniden eskiye. UI konuya
    * (`subjectId`) göre süzer; satır sayısı plan sürümü + senaryo isteği kadar.
    */
   fastify.get<IdParams>("/api/jobs/:id/critiques", async (req) => {
@@ -202,7 +202,7 @@ export function registerFlowRoutes(fastify: FastifyInstance, deps: ApiDeps): voi
   });
 
   /**
-   * Tarayıcı turunun kanıt görüntüsü (karar §41):
+   * Tarayıcı turunun kanıt görüntüsü:
    * `<artifactsDir>/<jobId>/live-<tur>/<dosya>`. Ad agent'tan geliyor
    * (kural 3): desenle sınırlı, yol kökün dışına çıkamaz.
    */

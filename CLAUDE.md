@@ -12,12 +12,10 @@ yalnız o dosya düzenlenir.
 
 | Dosya | Ne |
 |---|---|
-| [`docs/plan/00-master-plan.md`](docs/plan/00-master-plan.md) | Onaylı ana plan: mimari, durum makinesi, fazlar, riskler |
-| [`docs/plan/01-decisions.md`](docs/plan/01-decisions.md) | Kararlar ve gerekçeleri — "neden böyle" sorusunun cevabı |
-| [`docs/plan/02-status.md`](docs/plan/02-status.md) | Ne bitti, ne sırada |
+| [`README.md`](README.md) | Kurulum, ortam değişkenleri, mimari ve iş akışı diyagramları |
+| [`docs/kullanim-kilavuzu.md`](docs/kullanim-kilavuzu.md) | UI'dan kullanım, adım adım |
 
-**Önce bu üçünü oku.** Plan onaylıdır; ondan sapacaksan gerekçesini yaz ve
-kullanıcıya sor.
+Mimariyi değiştirecek bir karar vermeden önce gerekçesini yaz ve kullanıcıya sor.
 
 ## Temel ilke
 
@@ -119,7 +117,7 @@ Sunucu üç ortam değişkeni ister; **ikisi karıştırılmamalı**:
 | `AHTAPOT_DB` | SQLite dosyası — **`AHTAPOT_DATA`'dan ayrı** |
 
 İsteğe bağlı `AHTAPOT_REVIEW_KEYS`: yerel ön inceleme (OCR) anahtarları,
-satır başına `ad=anahtar`. Claude havuzundan ayrıdır (bkz. kararlar §20).
+satır başına `ad=anahtar`. Claude havuzundan ayrıdır.
 
 `AHTAPOT_DB` verilmezse sunucu sessizce `./data/ahtapot.sqlite` açar: işler
 görünmez, ekran boş gelir (yaşandı).
@@ -167,10 +165,9 @@ drizzle-kit'in aralığı DIŞINDA; migration üretimi bununla çalıştı
 ## Hedef proje: Northwind
 
 İlk kullanıcı, sistemin parçası **değil** — dışarıdan
-bağlanır. Ondan öğrenilen ve motoru şekillendiren gerçekler
-[`docs/plan/01-decisions.md`](docs/plan/01-decisions.md) içinde.
+bağlanır. Ondan öğrenilen ve motoru şekillendiren gerçekler:
 
-Kısaca: tek repo (.NET 10 + React), `main` dalı, `Northwind.Forms` **nested repo**
+Tek repo (.NET 10 + React), `main` dalı, `Northwind.Forms` **nested repo**
 (submodule değil, remote'u yerel disk yolu), `.run/` **canlı JWT token taşıyor**,
 `CLAUDE.md` 476 KB, build sırası bağlayıcı (npm → dotnet, tersi sessizce bozuk
 çıktı üretir), `-c Release` yasak (private feed → 401).

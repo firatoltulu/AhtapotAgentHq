@@ -237,7 +237,7 @@ test("başlat: Draft → Planning → PlanReview; worktree hazır, plan v1, kap�
     // Planner'a verilen: worktree cwd, salt okunur araçlar, iş başlığı.
     const call = t.calls[0]!;
     assert.equal(call.cwd, j.worktreePath);
-    // Web araçları insan kararıyla açık (01-decisions §12 değil, agents bölümü):
+    // Web araçları insan kararıyla açık:
     // Planner sürüm notu/kütüphane sınırı gibi şeyleri kendi doğrulayabilsin.
     assert.deepEqual(call.allowedTools, ["Read", "Glob", "Grep", "WebSearch", "WebFetch"]);
     assert.match(call.prompt, /Login ekranı/);

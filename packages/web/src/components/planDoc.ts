@@ -114,7 +114,7 @@ function ozet(doc: PlanDocument, phases: PlanPhaseRow[]): DocSection {
 }
 
 /**
- * 02 · Gereksinimler (§42)
+ * 02 · Gereksinimler
  *
  * İş tanımı dağınık girilebiliyor; insan burada metnin NASIL anlaşıldığını
  * okur. Alıntı ham metne geri bağlar, örtük gereksinim (alıntısız) ayrıca

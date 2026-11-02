@@ -107,7 +107,7 @@ export type JobPhase = z.infer<typeof JobPhaseSchema>;
  * sonraki case turu bu oturumu (plan anındaki eski bağlamı) devam ettirirdi.
  */
 /**
- * `mentor`: takılan agent'ın danıştığı üst basamak (karar §33). Host'ta,
+ * `mentor`: takılan agent'ın danıştığı üst basamak. Host'ta,
  * araçsız koşar; köprüye hiç gitmez.
  */
 export const AGENT_ROLES = ["analyst", "triage", "planner", "developer", "qa", "devops", "tester", "mentor", "cartographer", "critic"] as const;
@@ -255,7 +255,7 @@ export type PhaseTriage = z.infer<typeof PhaseTriageSchema>;
 const idList = (v: unknown): unknown => (typeof v === "string" ? v.split(/[\s,;]+/).filter(Boolean) : v);
 
 /**
- * İş tanımından çıkarılmış tek gereksinim (karar §42).
+ * İş tanımından çıkarılmış tek gereksinim.
  *
  * İş tanımı çoğu zaman dağınık giriliyor: istekler paragraf içinde kayboluyor,
  * bir kısmı örtük. Planner bunları numaralı, doğrulanabilir cümlelere çevirir;
@@ -330,7 +330,7 @@ export type PlanPhase = z.infer<typeof PlanPhaseSchema>;
 
 export const PlanDocumentSchema = z.object({
   summary: z.string().min(1),
-  /** İş tanımından çıkarılan gereksinimler (§42). Eski planlarda yok — boş liste. */
+  /** İş tanımından çıkarılan gereksinimler. Eski planlarda yok — boş liste. */
   requirements: z.array(RequirementSchema).transform(uniqueRequirementIds).default([]),
   /** Hangi repolara dokunulacak. Auto kipte Planner seçer, insan düzeltebilir. */
   targetRepos: z.array(z.string()).default([]),
@@ -394,7 +394,7 @@ export type PlanDocument = z.infer<typeof PlanDocumentSchema>;
  * profil hangisinin geçerli olduğunu söyler.
  */
 /**
- * Adım kontrol listesi (karar §34): bir kez geçen adım, kodu değişmedikçe
+ * Adım kontrol listesi: bir kez geçen adım, kodu değişmedikçe
  * yeniden koşmaz. Anahtar `<durum>.<adım>`. Bugün PR zinciri:
  * güvenlik → (kapı) → kod kalitesi → yerel inceleme → PR → bot incelemesi.
  * `qa.write`: QA testleri yazdı ve takımlar yeşil; `sha` HEAD değil, çalışma
@@ -416,7 +416,7 @@ export const StepCheckEntrySchema = z.object({
   at: z.string(),
   /**
    * Adım bittiğinde HEAD. İş PR öncesi bir duruma dönünce kayıt `stale` olur;
-   * PR zinciri başında HEAD bu değere eşitse kayıt geri gelir (karar §34).
+   * PR zinciri başında HEAD bu değere eşitse kayıt geri gelir.
    */
   sha: z.string().default(""),
   note: z.string().default(""),
@@ -536,7 +536,7 @@ export type PlanGatePayload = z.infer<typeof PlanGatePayloadSchema>;
 /**
  * Developer'ın modelini kim belirledi — `runDeveloping`teki öncelik zinciri.
  *
- * `forced` iş geneli zorlama (§22) her şeyi önceler; safha seçimi o varken
+ * `forced` iş geneli zorlama her şeyi önceler; safha seçimi o varken
  * yok sayılır ve insan bunu ekranda görmeli, yoksa safhayı düşürdüğünü sanıp
  * Fable'la koşmaya devam eder.
  */
@@ -619,7 +619,7 @@ export const TestScenarioSchema = z.object({
   preconditions: z.preprocess(lines, z.array(z.string())).default([]),
   steps: z.preprocess(lines, z.array(z.string()).min(1)),
   expected: z.preprocess((v) => (Array.isArray(v) ? v.join("\n") : v), z.string().min(1)),
-  /** Senaryonun doğruladığı gereksinimlerin `id`leri (§42). */
+  /** Senaryonun doğruladığı gereksinimlerin `id`leri. */
   covers: z.preprocess(idList, z.array(z.string())).default([]),
   /**
    * Senaryoyu koşacak test hesabının rolü (`live.browserTest.accounts[].role`).
@@ -668,7 +668,7 @@ export const ScenarioMarkSchema = z.object({
   round: z.number().int().min(1).default(1),
   at: z.string().default(""),
   /**
-   * `agent`: tarayıcı turunun ön işareti (karar §41). İnsanın işareti her
+   * `agent`: tarayıcı turunun ön işareti. İnsanın işareti her
    * zaman üstündür; insan agent işaretini benimseyince `human` olur.
    */
   source: z.enum(["human", "agent"]).default("human"),
@@ -695,7 +695,7 @@ export function parseScenarioMarks(raw: unknown): ScenarioMarks {
 }
 
 /**
- * Tarayıcı turunun `SCENARIO_RESULTS_JSON` bloğu (karar §41).
+ * Tarayıcı turunun `SCENARIO_RESULTS_JSON` bloğu.
  *
  * `retest` agent'ın yazabileceği bir durum DEĞİL — motorun red anındaki
  * işaretidir. Ön koşulu kurulamayan senaryo `unsure` + gerekçe.

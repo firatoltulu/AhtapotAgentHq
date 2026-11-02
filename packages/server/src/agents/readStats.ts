@@ -51,7 +51,7 @@ export interface ReadStats {
     cacheReadTokens: number;
     cacheCreationTokens: number;
     costMicroUsd: number;
-    /** Trail kod grafiği araç çağrıları (karar §44) — grafikli/grafiksiz işleri ayırmak için. */
+    /** Trail kod grafiği araç çağrıları — grafikli/grafiksiz işleri ayırmak için. */
     graphCalls: number;
   };
   files: FileReadStat[];

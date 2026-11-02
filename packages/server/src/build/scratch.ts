@@ -40,7 +40,7 @@ export interface ScratchPlan {
  * `C:\ /workspace`, scratch `overlay /`.
  *
  * Sonuç DOĞRU oluyor (69-81 girdi, `.bin/tsc` var) ama YAVAŞ: sekiz modül
- * 17 dakika. Aynı kurulum konteyner diskinde modül başına ~10 sn (§11b).
+ * 17 dakika. Aynı kurulum konteyner diskinde modül başına ~10 sn.
  *
  * Bu yüzden kurulum bittikten sonra sonucu scratch'e taşıyıp symlink'i geri
  * kuruyoruz: bir sonraki koşu `prepareScratchDirs` aşamasında symlink'i yerinde

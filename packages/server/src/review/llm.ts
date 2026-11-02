@@ -6,7 +6,7 @@ import { scrubSecrets, type LocalReview } from "@ahtapot/shared";
  * Yerel incelemede tanımlı sağlayıcıyla DOĞRUDAN konuşan ince istemci.
  *
  * OCR yapılandırmayı CLI'ya geçiriyor, isteği araç yapıyor; ikinci gözün
- * (§42) girdisi yalnız metin, konteyner ve worktree gerekmiyor — sunucu
+ * girdisi yalnız metin, konteyner ve worktree gerekmiyor — sunucu
  * kendisi çağırır. Anahtar yalnız isteğin başlığına girer: `process.env`'e
  * ve log'a yazılmaz (kural 5).
  */
@@ -43,7 +43,7 @@ export type CompleteTextOutcome =
   /**
    * `kind`: `parse` — sağlayıcı cevap verdi ama gövde okunamadı; diğerleri
    * (HTTP, bağlantı, zaman aşımı) sağlayıcıya ulaşılamadığını söyler. Yedeğe
-   * düşmek yalnız ikincisinde anlamlı (§42).
+   * düşmek yalnız ikincisinde anlamlı.
    */
   | { ok: false; reason: string; kind: "transport" | "parse" };
 
@@ -81,7 +81,7 @@ const join = (base: string, path: string): string => `${base.replace(/\/+$/, "")
  * silinir: `scrubSecrets` her sağlayıcının anahtar biçimini tanımayabilir.
  *
  * `temperature` GÖNDERİLMEZ: GPT-6 `temperature: 0`ı 400 ile reddediyor
- * (§20, ölçüldü). Token tavanının adı protokole göre değişir.
+ * (ölçüldü). Token tavanının adı protokole göre değişir.
  */
 export async function completeText(input: CompleteTextInput): Promise<CompleteTextOutcome> {
   const { protocol, model, key, system, user, maxOutputTokens } = input;

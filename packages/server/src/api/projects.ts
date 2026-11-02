@@ -757,7 +757,7 @@ export function registerProjectRoutes(fastify: FastifyInstance, deps: ApiDeps): 
     },
   );
 
-  /** Kod haritasının durumu (karar §35). Salt okunur. */
+  /** Kod haritasının durumu. Salt okunur. */
   fastify.get<IdParams>("/api/projects/:id/codemap", async (req) => {
     const project = getProject(req.params.id);
     if (!deps.codeMap) throw new ApiError(404, "kod haritası bu sunucuda kapalı");

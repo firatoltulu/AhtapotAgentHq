@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * İkinci göz (karar §42): plan ve test senaryolarını, yerel incelemede
+ * İkinci göz: plan ve test senaryolarını, yerel incelemede
  * tanımlı sağlayıcının modeli eleştirir. Üretici Claude, eleştirmen başka
  * model — eleştirmen yazmaz, yalnız ham iş tanımı ile Claude'un anladığı
  * arasındaki tutarsızlığı bulur.

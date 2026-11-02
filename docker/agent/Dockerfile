@@ -67,7 +67,7 @@ RUN set -eux; \
     rm -f "/tmp/opencodereview-linux-${arch}" /tmp/ocr.sha256; \
     ocr version
 
-# Playwright MCP + Chromium — canlı testte tarayıcı turu (karar §41).
+# Playwright MCP + Chromium — canlı testte tarayıcı turu.
 #
 # Köprü bu yolu arar; yoksa `browser` yeteneğini bildirmez ve sunucu turu
 # atlar. Sürüm sabit: MCP'nin bağımlı olduğu `playwright` sürümü tarayıcı
@@ -84,7 +84,7 @@ RUN set -eux; \
     node /opt/playwright-mcp/node_modules/@playwright/mcp/cli.js --version
 
 # Trail kod grafiği — tree-sitter ile sembol + çağrı grafiği, MCP ile
-# sunulur (karar §44, profil `agents.codeGraph`).
+# sunulur (profil `agents.codeGraph`).
 #
 # Köprü bu yolu arar; yoksa `codegraph` yeteneğini bildirmez. `trail`
 # PATH'te: motor grafiği `executor` ile kurar. `--ignore-scripts`:

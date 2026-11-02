@@ -35,7 +35,7 @@ export interface DeveloperRuntime {
      * fonksiyonu çağırır, iki taraf yolda anlaşmak zorunda.
      */
     referencePaths?: string[];
-    /** Projenin kod haritası dizini (host) — SALT OKUNUR `/codemap`e bağlanır (karar §35). */
+    /** Projenin kod haritası dizini (host) — SALT OKUNUR `/codemap`e bağlanır. */
     codeMapRoot?: string;
   }): Promise<AcquiredRuntime>;
 
@@ -78,7 +78,7 @@ export interface AcquiredRuntime {
 export const CODEMAP_MOUNT = "/codemap";
 
 /**
- * Trail kod grafiklerinin konteynerdeki kökü (karar §44). Volume'de değil,
+ * Trail kod grafiklerinin konteynerdeki kökü. Volume'de değil,
  * konteynerin kendi diskinde: worktree'ye girmez, iş bitince konteynerle gider.
  */
 export const CODEGRAPH_ROOT = "/home/node/.cache/ahtapot-codegraph";

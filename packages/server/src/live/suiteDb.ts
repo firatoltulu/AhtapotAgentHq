@@ -13,8 +13,8 @@ import { dbNamesFor, pgConnString, pgCredsFrom, startPsqlHelper, suiteDbName, ty
  * gerçek koşu aynı veriyi kirletirdi.
  *
  * Şablonu KURMAZ. Kurulum migrate + seed için uygulamanın tamamını (Redis,
- * Elasticsearch) istiyor ve bu yalnız canlı ortamın compose ağında mümkün
- * (bkz. docs/plan/04-template-db.md). Şablon yoksa açık bir hatayla döner.
+ * Elasticsearch) istiyor ve bu yalnız canlı ortamın compose ağında mümkün.
+ * Şablon yoksa açık bir hatayla döner.
  *
  * Bugün yalnız DIŞ Postgres: konteynerdeki Postgres yalnız canlı ortam
  * ayaktayken var ve test koşusu ona bağlanamaz.

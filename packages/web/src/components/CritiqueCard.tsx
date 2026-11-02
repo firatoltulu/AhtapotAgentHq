@@ -7,7 +7,7 @@ import { api, type CritiqueRow } from "../api";
 import { Badge, Button, ErrorText, fmtClock, type Tone } from "../ui";
 
 /**
- * İkinci göz (karar §42) — planı ya da senaryo listesini başka bir modelin
+ * İkinci göz — planı ya da senaryo listesini başka bir modelin
  * eleştirisi. DANIŞMANDIR: kapıyı bekletmez, bulgu Planner'a kendiliğinden
  * gitmez. İnsan işaretlediği bulguları red gerekçesine taşır.
  *
